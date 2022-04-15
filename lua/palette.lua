@@ -1,5 +1,5 @@
 local M = {
-	setup = require("palette.setup"),
+	setup = require("palette.utils").setup,
 	utils = require("palette.utils"),
 }
 
