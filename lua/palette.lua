@@ -20,7 +20,7 @@ M.setup = function(options)
 		popup_menu = validate(options.popup_menu, true),
 		sign_column = validate(options.sign_column, false),
 		transparent = validate(options.transparent, false),
-		no_color_icons = validate(options.no_color_icons, false),
+		color_icons = validate(options.color_icons, true),
 		silent = validate(options.silent, false),
 		vim_globals = validate(options.vim_globals, true),
 		on_change = validate(options.on_change, function() end),
@@ -709,7 +709,7 @@ M.setup = function(options)
 			add_highlights(popup_menu)
 		end
 
-		if config.no_color_icons then
+		if not config.color_icons then
 			add_highlights(no_color_icons)
 		end
 
