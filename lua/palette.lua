@@ -1,6 +1,6 @@
-local darken = require("utils").darken
-local lighten = require("utils").lighten
-local is_light = require("utils").is_light
+local darken = require("palette.utils").darken
+local lighten = require("palette.utils").lighten
+local is_light = require("palette.utils").is_light
 local autocmd = vim.api.nvim_create_autocmd
 
 local M = {}
