@@ -22,7 +22,7 @@ M.setup = function(options)
 		transparent = validate(options.transparent, false),
 		no_color_icons = validate(options.no_color_icons, false),
 		silent = validate(options.silent, false),
-		vim_globals = validate(options.vim_globals, false),
+		vim_globals = validate(options.vim_globals, true),
 		on_change = validate(options.on_change, function() end),
 		themes_folder = validate(options.themes_folder, "themes/"),
 		custom_highlights = validate(options.custom_highlights, {}),
@@ -86,7 +86,7 @@ M.setup = function(options)
 		end
 		if not config.silent then
 			vim.cmd(":normal <C-l>")
-			print("Could not find /nvim/lua/" .. config.themes_folder .. "" .. theme_name .. ".lua")
+			print("[nvim-palette] could not find /nvim/lua/" .. config.themes_folder .. "" .. theme_name .. ".lua")
 		end
 	end
 
