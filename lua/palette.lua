@@ -627,19 +627,23 @@ M.setup = function(options)
 			},
 
 			insert = {
-				a = { fg = foreground_1, bg = green },
+				a = { fg = is_light(foreground_3, green, 140), bg = green },
+				x = { fg = foreground_1, bg = background_3 },
 			},
 
 			command = {
-				a = { fg = foreground_1, bg = yellow },
+				a = { fg = is_light(foreground_3, yellow, 140), bg = yellow },
+				x = { fg = foreground_1, bg = background_3 },
 			},
 
 			visual = {
-				a = { fg = foreground_1, bg = purple },
+				a = { fg = is_light(foreground_3, purple, 140), bg = purple },
+				x = { fg = foreground_1, bg = background_3 },
 			},
 
 			replace = {
-				a = { fg = foreground_1, bg = red },
+				a = { fg = is_light(foreground_3, red, 140), bg = red },
+				x = { fg = foreground_1, bg = background_3 },
 			},
 		}
 	elseif variant == "dark" then
