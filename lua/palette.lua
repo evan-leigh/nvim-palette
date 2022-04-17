@@ -224,7 +224,7 @@ M.setup = function(options)
 
 		-- Telescope: Preview
 		TelescopePreviewBorder = { fg = foreground_3 },
-		TelescopePreviewTitle = { bg = none, fg = foreground_3, gui = "standout" },
+		TelescopePreviewTitle = { bg = none, fg = foreground_3 },
 		TelescopePreviewNormal = { bg = none },
 
 		-- Telescope: Results
@@ -236,7 +236,7 @@ M.setup = function(options)
 		TelescopePromptBorder = { bg = none, fg = foreground_3 },
 		TelescopePromptNormal = { bg = none, fg = foreground_1 },
 		TelescopePromptPrefix = { fg = accent },
-		TelescopePromptTitle = { bg = none, fg = accent, gui = "standout" },
+		TelescopePromptTitle = { bg = none, fg = foreground_3 },
 		TelescopePromptCounter = { fg = accent },
 
 		-- Telescope: Other
