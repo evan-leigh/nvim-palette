@@ -289,25 +289,25 @@ M.setup = function(options)
 		DiagnosticError = { fg = red, bg = none },
 		DiagnosticSignError = { fg = red, bg = none },
 		DiagnosticUnderlineError = { guisp = red, gui = "undercurl" },
-		DiagnosticFloatingError = { bg = background_2 },
+		DiagnosticFloatingError = { bg = none, fg = foreground_1 },
 
 		-- Built-in: Warning
 		DiagnosticWarn = { fg = yellow, bg = none },
 		DiagnosticSignWarn = { fg = yellow, bg = none },
 		DiagnosticUnderlineWarn = { guisp = yellow, gui = "undercurl" },
-		DiagnosticFloatingWarn = { bg = background_2 },
+		DiagnosticFloatingWarn = { bg = none, fg = foreground_1 },
 
 		-- Built-in: Info
 		DiagnosticInfo = { fg = purple, bg = none },
 		DiagnosticSignInfo = { fg = purple, bg = none },
 		DiagnosticUnderlineInfo = { guisp = purple, gui = "undercurl" },
-		DiagnosticFloatingInfo = { bg = background_3 },
+		DiagnosticFloatingInfo = { bg = none, fg = foreground_1 },
 
 		-- Built-in: Hint
 		DiagnosticHint = { fg = blue, bg = none },
 		DiagnosticSignHint = { fg = blue, bg = none },
 		DiagnosticUnderlineHint = { guisp = blue, gui = "undercurl" },
-		DiagnosticFloatingHint = { bg = background_2 },
+		DiagnosticFloatingHint = { bg = none, fg = foreground_1 },
 
 		-- Built-in: Floating
 		-- NormalFloat  , bg =none normal
