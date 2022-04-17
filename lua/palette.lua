@@ -14,6 +14,9 @@ local function validate(value, default)
 end
 
 M.setup = function(options)
+	if options == nil then
+		options = {}
+	end
 	local config = {
 		enable = validate(options.enable, true),
 		background = validate(options.background, true),
