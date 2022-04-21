@@ -112,8 +112,8 @@ M.setup = function(options)
 	local generated = {
 		dark = {
 			background_0 = palette.dark.background,
-			background_1 = lighten(palette.dark.background, 10),
-			background_2 = lighten(palette.dark.background, 15),
+			background_1 = lighten(palette.dark.background, 5),
+			background_2 = lighten(palette.dark.background, 10),
 			background_3 = lighten(palette.dark.background, 15),
 			foreground_0 = darken(palette.dark.foreground, 00),
 			foreground_1 = darken(palette.dark.foreground, 60),
@@ -289,25 +289,25 @@ M.setup = function(options)
 		DiagnosticError = { fg = red, bg = none },
 		DiagnosticSignError = { fg = red, bg = none },
 		DiagnosticUnderlineError = { guisp = red, gui = "undercurl" },
-		DiagnosticFloatingError = { bg = none, fg = foreground_1 },
+		DiagnosticFloatingError = { bg = none, fg = foreground_2 },
 
 		-- Built-in: Warning
 		DiagnosticWarn = { fg = yellow, bg = none },
 		DiagnosticSignWarn = { fg = yellow, bg = none },
 		DiagnosticUnderlineWarn = { guisp = yellow, gui = "undercurl" },
-		DiagnosticFloatingWarn = { bg = none, fg = foreground_1 },
+		DiagnosticFloatingWarn = { bg = none, fg = foreground_2 },
 
 		-- Built-in: Info
 		DiagnosticInfo = { fg = purple, bg = none },
 		DiagnosticSignInfo = { fg = purple, bg = none },
 		DiagnosticUnderlineInfo = { guisp = purple, gui = "undercurl" },
-		DiagnosticFloatingInfo = { bg = none, fg = foreground_1 },
+		DiagnosticFloatingInfo = { bg = none, fg = foreground_2 },
 
 		-- Built-in: Hint
 		DiagnosticHint = { fg = blue, bg = none },
 		DiagnosticSignHint = { fg = blue, bg = none },
 		DiagnosticUnderlineHint = { guisp = blue, gui = "undercurl" },
-		DiagnosticFloatingHint = { bg = none, fg = foreground_1 },
+		DiagnosticFloatingHint = { bg = none, fg = foreground_2 },
 
 		-- Built-in: Floating
 		-- NormalFloat  , bg =none normal
@@ -751,38 +751,6 @@ M.setup = function(options)
 
 			vim.cmd("hi! " .. hl)
 		end
-
-		-- trying to get this to work with kitty
-
-		--   local function edit(key, value)
-		--     -- Read from file
-		--     -- local file = io.open("lua/utils/colorscheme/test.conf", "r")
-		--     local file = io.open("lua/utils/colorscheme/test.conf", "r")
-		--
-		--     local lines = {}
-		--
-		--     for line in file:lines() do
-		--       -- Replace key with new value
-		--       local updated_line = line:gsub(key, value)
-		--
-		--       -- If matched with updated_line, replace it
-		--       if updated_line ~= line then
-		--         table.insert(lines, updated_line)
-		--       else
-		--         table.insert(lines, line)
-		--       end
-		--     end
-		--
-		--     -- Write to file
-		--     -- file = io.open("lua/utils/colorscheme/test.conf", "w")
-		--     file = io.open("lua/utils/colorscheme/test.conf", "w")
-		--     file:write(tostring(table.concat(lines, "\n")))
-		--
-		--     -- Close file
-		--     file:close()
-		--   end
-		--
-		--   edit("hello world", "what the fuck")
 
 		local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
 
