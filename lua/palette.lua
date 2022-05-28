@@ -1,10 +1,15 @@
-local darken = require("palette.utils").darken
-local lighten = require("palette.utils").lighten
-local is_light = require("palette.utils").is_light
+local darken = require("utils").darken
+local lighten = require("utils").lighten
+local is_light = require("utils").is_light
 local autocmd = vim.api.nvim_create_autocmd
 
 local M = {}
 
+-- Checks to see if value is exists, if not, returns default value
+--
+-- @param {any} value - The value to check
+-- @param {any} default - The default value to return
+-- @return {any} - The value or default value
 local function validate(value, default)
 	if value == nil then
 		return default
@@ -13,6 +18,7 @@ local function validate(value, default)
 	end
 end
 
+-- Provide options, or use defaults
 M.setup = function(options)
 	if options == nil then
 		options = {}
@@ -33,6 +39,8 @@ M.setup = function(options)
 	}
 
 	local variant
+
+	-- Checks vim's "background" value
 	for i, x in pairs(vim.opt.background) do
 		if i == "_value" then
 			if x == "light" then
@@ -43,8 +51,10 @@ M.setup = function(options)
 		end
 	end
 
+	-- Colors that will be referenced and modified for the theme
 	local palette = {}
 
+	-- Nvim API helper for getting the current colorscheme that's in use
 	local theme_name = vim.g.colors_name
 
 	if vim.g.colors_name == nil then
@@ -112,9 +122,11 @@ M.setup = function(options)
 	local generated = {
 		dark = {
 			background_0 = palette.dark.background,
+
 			background_1 = lighten(palette.dark.background, 5),
 			background_2 = lighten(palette.dark.background, 10),
 			background_3 = lighten(palette.dark.background, 15),
+
 			foreground_0 = darken(palette.dark.foreground, 00),
 			foreground_1 = darken(palette.dark.foreground, 60),
 			foreground_2 = darken(palette.dark.foreground, 90),
@@ -123,13 +135,16 @@ M.setup = function(options)
 
 		light = {
 			background_0 = palette.light.background,
+
 			background_1 = darken(palette.light.background, 10),
 			background_2 = darken(palette.light.background, 15),
 			background_3 = darken(palette.light.background, 40),
+
 			foreground_0 = lighten(palette.light.foreground, 00),
 			foreground_1 = lighten(palette.light.foreground, 20),
 			foreground_2 = lighten(palette.light.foreground, 40),
 			foreground_3 = lighten(palette.light.foreground, 90),
+
 			background = palette.light.background,
 		},
 	}
@@ -183,8 +198,8 @@ M.setup = function(options)
 
 	local highlights = {
 		-- Built-in: Statusline
-		Statusline = { bg = none, fg = foreground_2, gui = none },
-		StatuslineNC = { bg = none, fg = foreground_3, gui = none },
+		-- Statusline = { bg = none, fg = foreground_2, gui = none },
+		-- StatuslineNC = { bg = none, fg = foreground_3, gui = none },
 
 		-- Built-in: Normal
 		CursorLineNr = { bg = background_3 },
@@ -273,7 +288,6 @@ M.setup = function(options)
 		GitGutterDelete = { fg = red, bg = none },
 
 		-- copilot
-		-- https://githubom/akinsho/bufferlinevim
 
 		CopilotSuggestion = { fg = foreground_3, bg = none },
 
@@ -349,6 +363,7 @@ M.setup = function(options)
 		CursorLine = { bg = "none" },
 		CursorLineNr = { bg = "none" },
 		SignColumn = { bg = "none" },
+		FoldColumn = { bg = "none" },
 		LineNr = { bg = "none" },
 	}
 
@@ -397,6 +412,7 @@ M.setup = function(options)
 		LineNr = { bg = background_1, fg = foreground_2 },
 		VertSplit = { bg = background_1, fg = background_1 },
 		SignColumn = { bg = background_1 },
+		FoldColumn = { bg = background_1 },
 
 		-- gitsigns.nvim
 		GitSignsAdd = { bg = background_1, fg = green },
@@ -616,8 +632,8 @@ M.setup = function(options)
 				a = { fg = is_light(foreground_3, accent, 140), bg = accent },
 				b = { fg = foreground_1, bg = background_3 },
 				c = { fg = foreground_3, bg = darken(background_0, 7) },
-				y = { fg = foreground_3, bg = darken(background_0, 7) },
-				x = { fg = foreground_1, bg = background_3 },
+				x = { fg = foreground_3, bg = darken(background_0, 7) },
+				y = { fg = foreground_1, bg = background_3 },
 				z = { fg = is_light(foreground_3, accent, 140), bg = accent },
 			},
 
@@ -664,8 +680,8 @@ M.setup = function(options)
 				a = { fg = foreground_1, bg = background_1 },
 				b = { fg = foreground_1, bg = background_1 },
 				c = { fg = foreground_3, bg = darken(background_0, 7) },
-				y = { fg = foreground_3, bg = darken(background_0, 7) },
-				x = { fg = foreground_1, bg = background_1 },
+				x = { fg = foreground_3, bg = darken(background_0, 7) },
+				y = { fg = foreground_1, bg = background_1 },
 				z = { fg = foreground_1, bg = background_1 },
 			},
 
@@ -754,6 +770,7 @@ M.setup = function(options)
 
 		local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
 
+		-- Update colors when colorscheme changes
 		autocmd("ColorScheme", {
 			desc = "Reset highlights on save",
 			callback = function()
