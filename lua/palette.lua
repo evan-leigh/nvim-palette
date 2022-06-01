@@ -3,9 +3,6 @@ local lighten = require("palette.utils").lighten
 local is_light = require("palette.utils").is_light
 local autocmd = vim.api.nvim_create_autocmd
 
-pcall(vim.api.nvim_del_augroup_by_id, 7)
-local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
-
 local M = {}
 
 -- Checks to see if value is exists, if not, returns default value
@@ -509,31 +506,22 @@ M.setup = function(options)
 		add_highlights(popup_menu, highlights)
 	end
 
-	-- This needs to get initalized before custom highlights are APPLIED
+	local custom_highlights = {}
+
 	vim.g.background_0 = background_0
 	vim.g.background_1 = background_1
 	vim.g.background_2 = background_2
 	vim.g.background_3 = background_3
-
 	vim.g.foreground_0 = foreground_0
 	vim.g.foreground_1 = foreground_1
 	vim.g.foreground_2 = foreground_2
 	vim.g.foreground_3 = foreground_3
-
+	vim.g.accent = accent
 	vim.g.red = red
 	vim.g.green = green
 	vim.g.yellow = yellow
 	vim.g.blue = blue
 	vim.g.purple = purple
-	vim.g.accent = accent
-
-	if config["*"] then
-		add_highlights(config["*"], highlights)
-	end
-
-	if palette.custom then
-		add_highlights(palette.custom, highlights)
-	end
 
 	local function apply_highlights(highlights_tbl)
 		for k, v in pairs(highlights_tbl) do
@@ -542,7 +530,6 @@ M.setup = function(options)
 			if v.links == nil then
 				if v.bg ~= nil then
 					hl = hl .. " guibg=" .. v.bg
-					-- print("hl: " .. hl .. " bg: " .. v.bg)
 				end
 
 				if v.fg ~= nil then
@@ -564,11 +551,28 @@ M.setup = function(options)
 		end
 	end
 
+	-- This needs to get initalized before custom highlights are APPLIED
+
+	-- vim.g.accent = accent
+
 	apply_highlights(highlights)
+
+	if config["*"] then
+		add_highlights(config["*"], custom_highlights)
+	end
+
+	if palette.custom then
+		add_highlights(palette.custom, custom_highlights)
+	end
+
+	apply_highlights(custom_highlights)
 
 	if pcall(require, "nvim-web-devicons") then
 		require("nvim-web-devicons").set_up_highlights()
 	end
+
+	pcall(vim.api.nvim_del_augroup_by_id, 7)
+	local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
 
 	-- vim.api.nvim_del_augroup_by_id(group)
 	autocmd("ColorScheme, VimEnter", {
