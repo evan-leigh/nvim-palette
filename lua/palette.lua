@@ -3,6 +3,78 @@ local lighten = require("palette.utils").lighten
 local is_light = require("palette.utils").is_light
 local autocmd = vim.api.nvim_create_autocmd
 
+local required = {
+	dark = {
+		background = "#111111",
+		foreground = "#ced2da",
+		red = "#E86671",
+		green = "#98C379",
+		yellow = "#E5C07B",
+		blue = "#61AFEF",
+		purple = "#c792ea",
+	},
+	light = {
+		background = "#E1E1E1",
+		foreground = "#444444",
+		red = "#d70000",
+		green = "#008700",
+		yellow = "#d7af5f",
+		blue = "#0087af",
+		purple = "#8700af",
+	},
+}
+
+local variant
+
+for i, x in pairs(vim.opt.background) do
+	if i == "_value" then
+		if x == "light" then
+			variant = "light"
+		else
+			variant = "dark"
+		end
+	end
+end
+-- TODO:
+-- Ability to add highlights without overriding any
+
+local function execute_highlights(key, value)
+	local hl = key
+	if value.links == nil then
+		if value.bg ~= nil then
+			hl = hl .. " guibg=" .. value.bg
+		end
+
+		if value.fg ~= nil then
+			hl = hl .. " guifg=" .. value.fg
+		end
+
+		if value.gui ~= nil then
+			hl = hl .. " gui=" .. value.gui
+		end
+
+		if value.guisp ~= nil then
+			hl = hl .. " guisp=" .. value.guisp
+		end
+
+		vim.cmd("hi " .. hl)
+	else
+		vim.cmd("hi! link " .. hl .. " " .. value.links)
+	end
+end
+
+local function apply_highlights(highlights_tbl)
+	for key, value in pairs(highlights_tbl) do
+		execute_highlights(key, value)
+	end
+end
+
+local function add_highlights(tbl_1, tbl_2)
+	for k, v in pairs(tbl_1) do
+		tbl_2[k] = v
+	end
+end
+
 local M = {}
 
 -- Checks to see if value is exists, if not, returns default value
@@ -18,37 +90,53 @@ local function validate(value, default)
 	end
 end
 
+-- FEATURES:
+-- ✅ Add ability to add custom highlights
+
 -- FIX BUGS:
 -- ✅ Prevent au command from duplicating itself
--- ✅ default themes have no syntax highlighting
--- Recoginize "vim.g" colors on start up
+-- ✅ Recoginize "vim.g" colors on start up
 
+-- (default theme is set)
+-- default themes have no syntax highlighting
+
+-- (when a default theme is not set)
+-- when using vim.g values in custom, vim.g values arent being used from the custom colors
+
+local user_configuration
+local user_highlights
+
+M.custom_highlights = function(highlights)
+	if not highlights == nil then
+		user_highlights = highlights
+		-- user_highlights = highlights[variant]
+
+		-- print(highlights[variant][vim.g.colors_name])
+
+		local custom_highlights = {}
+
+		add_highlights(highlights[variant]["*"], custom_highlights)
+
+		for key in pairs(highlights[variant]) do
+			if key == vim.g.colors_name then
+				add_highlights(highlights[variant][vim.g.colors_name], custom_highlights)
+			end
+		end
+
+		apply_highlights(custom_highlights)
+	end
+end
+
+-- Create highight groups based on options
+--
+-- @param {table} options - Apply different highlighting based on options
 -- Provide options, or use defaults
 M.setup = function(options)
 	if options == nil then
 		options = {}
 	end
 
-	local required = {
-		dark = {
-			background = "#000000",
-			foreground = "#ced2da",
-			red = "#E86671",
-			green = "#98C379",
-			yellow = "#E5C07B",
-			blue = "#61AFEF",
-			purple = "#c792ea",
-		},
-		light = {
-			background = "#E1E1E1",
-			foreground = "#444444",
-			red = "#d70000",
-			green = "#008700",
-			yellow = "#d7af5f",
-			blue = "#0087af",
-			purple = "#8700af",
-		},
-	}
+	user_configuration = options
 
 	local config = {
 		background = validate(options.background, true),
@@ -61,6 +149,7 @@ M.setup = function(options)
 		darken = validate(options.darken, 1),
 		["*"] = validate(options["*"], nil),
 		default = validate(options, nil),
+		variant = validate(options, variant),
 		colors_name = options[vim.g.colors_name],
 	}
 
@@ -71,18 +160,6 @@ M.setup = function(options)
 			palette = options
 		else
 			palette = required
-		end
-	end
-
-	local variant
-
-	for i, x in pairs(vim.opt.background) do
-		if i == "_value" then
-			if x == "light" then
-				variant = "light"
-			else
-				variant = "dark"
-			end
 		end
 	end
 
@@ -103,6 +180,7 @@ M.setup = function(options)
 	end
 
 	local amount = config.darken
+
 	if config.darken == 1 then
 		amount = 0
 	end
@@ -165,6 +243,24 @@ M.setup = function(options)
 	local purple = palette[variant].purple
 	local accent = palette[variant].accent or palette[variant].blue
 	local none = "none"
+
+	vim.g.background_0 = background_0
+	vim.g.background_1 = background_1
+	vim.g.background_2 = background_2
+	vim.g.background_3 = background_3
+
+	vim.g.foreground_0 = foreground_0
+	vim.g.foreground_1 = foreground_1
+	vim.g.foreground_2 = foreground_2
+	vim.g.foreground_3 = foreground_3
+	-- print(vim.g.foreground_3)
+
+	vim.g.accent = accent
+	vim.g.red = red
+	vim.g.green = green
+	vim.g.yellow = yellow
+	vim.g.blue = blue
+	vim.g.purple = purple
 
 	local highlights = {
 		-- Built-in: Statusline
@@ -482,12 +578,6 @@ M.setup = function(options)
 
 	require("lualine").setup({ options = { theme = lualine_highlights } })
 
-	local function add_highlights(tbl_1, tbl_2)
-		for k, v in pairs(tbl_1) do
-			tbl_2[k] = v
-		end
-	end
-
 	-- add_highlights(highlights)
 
 	if config.background then
@@ -506,66 +596,7 @@ M.setup = function(options)
 		add_highlights(popup_menu, highlights)
 	end
 
-	local custom_highlights = {}
-
-	vim.g.background_0 = background_0
-	vim.g.background_1 = background_1
-	vim.g.background_2 = background_2
-	vim.g.background_3 = background_3
-	vim.g.foreground_0 = foreground_0
-	vim.g.foreground_1 = foreground_1
-	vim.g.foreground_2 = foreground_2
-	vim.g.foreground_3 = foreground_3
-	vim.g.accent = accent
-	vim.g.red = red
-	vim.g.green = green
-	vim.g.yellow = yellow
-	vim.g.blue = blue
-	vim.g.purple = purple
-
-	local function apply_highlights(highlights_tbl)
-		for k, v in pairs(highlights_tbl) do
-			local hl = k
-
-			if v.links == nil then
-				if v.bg ~= nil then
-					hl = hl .. " guibg=" .. v.bg
-				end
-
-				if v.fg ~= nil then
-					hl = hl .. " guifg=" .. v.fg
-				end
-
-				if v.gui ~= nil then
-					hl = hl .. " gui=" .. v.gui
-				end
-
-				if v.guisp ~= nil then
-					hl = hl .. " guisp=" .. v.guisp
-				end
-
-				vim.cmd("hi " .. hl)
-			else
-				vim.cmd("hi! link " .. hl .. " " .. v.links)
-			end
-		end
-	end
-
-	-- This needs to get initalized before custom highlights are APPLIED
-
-	-- vim.g.accent = accent
-
 	apply_highlights(highlights)
-
-	if config["*"] then
-		add_highlights(config["*"], custom_highlights)
-	end
-
-	if palette.custom then
-		add_highlights(palette.custom, custom_highlights)
-	end
-
-	apply_highlights(custom_highlights)
 
 	if pcall(require, "nvim-web-devicons") then
 		require("nvim-web-devicons").set_up_highlights()
@@ -579,7 +610,8 @@ M.setup = function(options)
 		desc = "Reset highlights on save",
 		group = group,
 		callback = function()
-			M.setup(options)
+			M.setup(user_configuration)
+			M.custom_highlights(user_highlights)
 		end,
 	})
 
