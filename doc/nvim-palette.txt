@@ -1,0 +1,16 @@
+*nvim-palette.lua* A simple colormanager for your colorschemes
+
+Minimum version of neovim: 0.6.0
+
+Author: Evan Leigh <evanleeigh@gmail.com>
+
+==============================================================================
+QUICK START                                          *nvim-palette-quickstart*
+
+    1. Setup ................. |nvim-palette-setup|
+
+================================================================================
+SETUP                                                      *nvim-palette-setup*
+
+
+vim:tw=78:ts=4:sw=4:et:ft=help:norl:

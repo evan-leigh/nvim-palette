@@ -42,6 +42,7 @@ local fallback = {
     yellow = "#D7AF5F",
     blue = "#61AFEF",
     purple = "#c792ea",
+    accent = "#61AFEF",
   },
   light = {
     background = "#E1E1E1",
@@ -51,11 +52,12 @@ local fallback = {
     yellow = "#d7af5f",
     blue = "#0087af",
     purple = "#8700af",
+    accent = "#61AFEF",
   },
 }
 
-local variant
-local palette
+local variant -- @string `vim.opt.background` value
+local palette -- @string colorscheme thats set
 
 for i, x in pairs(vim.opt.background) do
   if i == "_value" then
@@ -160,8 +162,6 @@ M.setup = function(options)
 
   local background = fn.synIDattr(fn.synIDtrans(fn.hlID("Normal")), "bg#")
 
-  -- print(background)
-
   user_configuration = options
 
   local config = {
@@ -171,9 +171,11 @@ M.setup = function(options)
     transparent = validate(options.transparent, false),
     on_change = validate(options.on_change, function() end),
     lualine = validate(options.lualine, true),
+    variant = validate(options.variant, nil),
   }
 
   palette = options[vim.g.colors_name]
+  -- local user_variant = options.variant
 
   if palette == nil then
     if options then
@@ -199,7 +201,12 @@ M.setup = function(options)
 
   local amount = 1
 
-  if options["*"] ~= nil and options["*"].settings ~= nil and options["*"].settings.darken ~= nil then
+  if
+    options["*"] ~= nil
+    and options["*"] ~= nil
+    and options["*"].settings ~= nil
+    and options["*"].settings.darken ~= nil
+  then
     amount = options["*"].settings.darken
   end
 
@@ -257,13 +264,27 @@ M.setup = function(options)
     foreground_3 = generated.light.foreground_3
   end
 
+  -- If the color doens't exist in palette, if the color exists in ["*"][variant] then use it, else the fallback value
+  local function validate_color(color)
+    -- Checks if color exist in palette
+    if palette[variant][color] == nil then
+      if options["*"][variant] ~= nil and options["*"][variant][color] ~= nil then
+        return options["*"][variant][color]
+      else
+        return fallback[variant][color]
+      end
+    end
+
+    return palette[variant][color]
+  end
+
   -- Core
-  local red = palette[variant].red
-  local green = palette[variant].green
-  local yellow = palette[variant].yellow
-  local blue = palette[variant].blue
-  local purple = palette[variant].purple
-  local accent = palette[variant].accent or palette[variant].blue
+  local red = validate_color("red")
+  local green = validate_color("green")
+  local yellow = validate_color("yellow")
+  local blue = validate_color("blue")
+  local purple = validate_color("purple")
+  local accent = validate_color("accent")
   local none = "none"
 
   vim.g.background_0 = background_0
@@ -628,6 +649,10 @@ end
 
 M.custom_highlights = function(highlights)
   if highlights == nil then
+    return
+  end
+
+  if highlights[variant] == nil then
     return
   end
 
