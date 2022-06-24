@@ -71,23 +71,19 @@ end
 -- TODO:
 -- Ability to add highlights without overriding any
 
+-- Merges two tables together
+--
+-- @param {table} tbl_1 - The first table
+-- @param {table} tbl_2 - The second table
+-- @return {table} - The merged table
+local function add_highlights(tbl_1, tbl_2)
+  for k, v in pairs(tbl_1) do
+    tbl_2[k] = v
+  end
+end
+
 local function execute_highlights(key, value)
   local hl = key
-
-  -- local function vim_highlights(highlights)
-  --   for group_name, group_settings in pairs(highlights) do
-  --     vim.api.nvim_command(
-  --       string.format(
-  --         "highlight %s guifg=%s guibg=%s guisp=%s gui=%s",
-  --         group_name,
-  --         group_settings.fg or "none",
-  --         group_settings.bg or "none",
-  --         group_settings.sp or "none",
-  --         group_settings.fmt or "none"
-  --       )
-  --     )
-  --   end
-  -- end
 
   if value.links == nil then
     if value.bg ~= nil then
@@ -112,29 +108,42 @@ local function execute_highlights(key, value)
   end
 end
 
+local user_configuration
+local user_highlights
+
 local function apply_highlights(highlights_tbl)
   for key, value in pairs(highlights_tbl) do
     execute_highlights(key, value)
   end
 end
 
--- Merges two tables together
---
--- @param {table} tbl_1 - The first table
--- @param {table} tbl_2 - The second table
--- @return {table} - The merged table
-local function add_highlights(tbl_1, tbl_2)
-  for k, v in pairs(tbl_1) do
-    tbl_2[k] = v
+M.custom_highlights = function(highlights)
+  if highlights == nil then
+    return
   end
-end
 
-local user_configuration
-local user_highlights
+  if highlights["*"][variant] == nil or highlights["*"] == nil then
+    return
+  end
+
+  user_highlights = highlights
+
+  local custom_highlights = {}
+
+  add_highlights(highlights["*"][variant], custom_highlights)
+
+  for key in pairs(highlights) do
+    if key == vim.g.colors_name then
+      add_highlights(highlights[vim.g.colors_name][variant], custom_highlights)
+    end
+  end
+
+  apply_highlights(custom_highlights)
+end
 
 -- This will update the palette and highlights
 local function update_colors()
-  -- Delete augroups so that their not duplicated
+  -- Delete augroups so that they're not duplicated
   pcall(vim.api.nvim_del_augroup_by_id, 7)
   local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
 
@@ -264,11 +273,11 @@ M.setup = function(options)
     foreground_3 = generated.light.foreground_3
   end
 
-  -- If the color doens't exist in palette, if the color exists in ["*"][variant] then use it, else the fallback value
   local function validate_color(color)
     -- Checks if color exist in palette
     if palette[variant][color] == nil then
-      if options["*"][variant] ~= nil and options["*"][variant][color] ~= nil then
+      -- I want a better way of doing this
+      if options["*"] ~= nil and options["*"][variant] ~= nil and options["*"][variant][color] ~= nil then
         return options["*"][variant][color]
       else
         return fallback[variant][color]
@@ -304,12 +313,28 @@ M.setup = function(options)
   vim.g.blue = blue
   vim.g.purple = purple
 
+  vim.cmd([[
+    hi! clear Folded
+  ]])
+
   local highlights = {
     -- Built-in: Statusline
     Statusline = { bg = none, fg = foreground_2, gui = none },
     StatuslineNC = { bg = none, fg = foreground_3, gui = none },
 
-    -- Built-in:
+    -- Built-in: Fold
+    Folded = { bg = lighten(background_0, 10) },
+    FoldColumn = { fg = foreground_3, bg = background_0 },
+
+    -- nvim-ufo
+    -- https://github.com/kevinhwang91/nvim-ufo
+
+    UfoFoldedBg = { bg = "none" },
+    UfoFoldedFg = { bg = "none" },
+    UfoFoldedEllipsis = { fg = foreground_3 },
+
+    -- Built-in: CursorLine
+    CursorLine = { bg = background_3 },
     CursorLineNr = { bg = background_3 },
     LineNr = { bg = none, fg = foreground_3 },
     SignColumn = { bg = none },
@@ -322,8 +347,8 @@ M.setup = function(options)
     -- https://githubom/kyazdani42/nvim-tree
 
     -- NvimTree: Background
-    NvimTreeNormal = { bg = background_1, fg = foreground_2 },
-    NvimTreeNormalNC = { bg = background_1, fg = foreground_2 },
+    NvimTreeNormal = { bg = background_1, fg = foreground_1 },
+    NvimTreeNormalNC = { bg = background_1, fg = foreground_1 },
     NvimTreeEndOfBuffer = { bg = background_1, fg = background_1 },
     NvimTreeVertSplit = { bg = background_1, fg = background_1 },
     NvimTreeStatusline = { bg = background_1, fg = background_1 },
@@ -369,7 +394,7 @@ M.setup = function(options)
     TelescopeSelection = { links = "PmenuSel" },
     TelescopeMatching = { fg = none, gui = "underline" },
 
-    -- which-keyvim
+    -- which-key
     -- https://githubom/folke/which-key
 
     WhichKeyFloat = { links = "NormalFloat" },
@@ -378,8 +403,78 @@ M.setup = function(options)
     WhichKeySeparator = { fg = background_3, bg = none },
     WhichKey = { fg = accent, gui = "bold", bg = none },
 
-    -- gitsignsvim
-    -- https://githubom/lewis6991/gitsignsvim
+    -- bufferline
+    -- https://github.com/akinsho/bufferline.nvim
+
+    -- BufferLine: Selected
+    BufferLineTabSelected = { fg = foreground_0, bg = background_3 },
+    BufferLineBufferSelected = { fg = foreground_0, bg = background_3 },
+    BufferLineCloseButtonSelected = { fg = foreground_0, bg = background_3 },
+    BufferLineDiagnosticSelected = { fg = darken(foreground_3, 20), bg = background_3 },
+    BufferLineNumbersSelected = { fg = foreground_0, bg = background_3 },
+    BufferLineHintSelected = { fg = purple, bg = background_3 },
+    BufferLineInfoSelected = { fg = blue, bg = background_3 },
+    BufferLineHintDiagnosticSelected = { fg = purple, bg = background_3 },
+    BufferLineInfoDiagnosticSelected = { fg = blue, bg = background_3 },
+    BufferLineWarningSelected = { fg = blue, bg = background_3 },
+    BufferLineWarningDiagnosticSelected = { fg = yellow, bg = background_3 },
+    BufferLineErrorSelected = { fg = red, bg = background_3 },
+    BufferLineErrorDiagnosticSelected = { fg = red, bg = background_3 },
+    BufferLineModifiedSelected = { fg = green, bg = background_3 },
+    BufferLineDuplicateSelected = { fg = foreground_3, bg = background_3 },
+    BufferLineSeparatorSelected = { fg = darken(background_0, 7), bg = background_3 },
+    BufferLineIndicatorSelected = { fg = accent, bg = background_3 },
+    BufferLinePickSelected = { fg = red, bg = background_3 },
+
+    -- BufferLine: Fill
+    BufferLineFill = { fg = foreground_3, bg = darken(background_0, 7) },
+
+    -- BufferLine: Group
+    BufferLineGroupLabel = { fg = darken(background_0, 7), bg = background_3 },
+    BufferLineGroupSeparator = { fg = foreground_3, bg = darken(background_0, 7) },
+
+    -- BufferLine: Visible
+    BufferLineSeparatorVisible = { fg = darken(background_0, 7), bg = background_2 },
+    BufferLineCloseButtonVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineBufferVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineNumbersVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineHintVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineHintDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineInfoVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineInfoDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineWarningVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineWarningDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineErrorVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineErrorDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineModifiedVisible = { fg = foreground_1, bg = background_2 },
+    BufferLineDuplicateVisible = { fg = foreground_3, bg = background_2 },
+    BufferLineIndicatorVisible = { fg = foreground_3, bg = background_2 },
+    BufferLinePickVisible = { fg = red, bg = background_2 },
+
+    -- BufferLine: Not Selected
+    BufferLineSeparator = { fg = darken(background_0, 7), bg = background_1 },
+    BufferLineInfo = { fg = foreground_3, bg = background_1 },
+    BufferLineHint = { fg = foreground_3, bg = background_1 },
+    BufferLineWarning = { fg = foreground_3, bg = background_1 },
+    BufferLineTab = { fg = foreground_3, bg = background_1 },
+    BufferLineDiagnostic = { fg = foreground_3, bg = background_1 },
+    BufferLineBuffer = { fg = foreground_3, bg = background_1 },
+    BufferLineError = { fg = foreground_3, bg = background_1 },
+    BufferLineModified = { fg = foreground_3, bg = background_1 },
+    BufferLineBackground = { fg = foreground_3, bg = background_1 },
+    BufferLineTabClose = { fg = foreground_3, bg = background_1 },
+    BufferLineCloseButton = { fg = foreground_3, bg = background_1 },
+    BufferLineInfoDiagnostic = { fg = foreground_3, bg = background_1 },
+    BufferLineNumbers = { fg = foreground_3, bg = background_1 },
+    BufferLineHintDiagnostic = { fg = foreground_3, bg = background_1 },
+    BufferLinePick = { fg = red, bg = background_1 },
+    BufferLineWarningDiagnostic = { fg = foreground_3, bg = background_1 },
+    BufferLineErrorDiagnostic = { fg = foreground_3, bg = background_1 },
+    BufferLineDuplicate = { fg = foreground_3, bg = background_1 },
+
+    -- gitsigns
+    -- https://githubom/lewis6991/gitsigns
 
     -- GitSigns: Added
     GitSignsAdd = { fg = green, bg = none },
@@ -402,8 +497,8 @@ M.setup = function(options)
 
     CopilotSuggestion = { fg = foreground_3, bg = none },
 
-    -- indent-blanklinevim
-    -- https://githubom/lukas-reineke/indent-blanklinevim
+    -- indent-blankline
+    -- https://githubom/lukas-reineke/indent-blankline
 
     IndentBlankLineChar = { fg = lighten(background_3, 15) },
     IndentBlankLineContextChar = { fg = lighten(background_3, variant == "light" and 0 or 40) },
@@ -437,6 +532,11 @@ M.setup = function(options)
     -- nvim-lspconfig
     -- https://githubom/neovim/nvim-lspconfig
 
+    -- LSP Symbols
+    LspReferenceRead = { bg = background_1 },
+    LspReferenceText = { bg = background_1 },
+    LspReferenceWrite = { bg = background_1 },
+
     -- LSP Config: Error
     LspDiagnosticsDefaultError = { fg = red },
     LspDiagnosticsSignError = { fg = red },
@@ -469,7 +569,8 @@ M.setup = function(options)
     CursorLine = { bg = "none" },
     CursorLineNr = { bg = "none" },
     SignColumn = { bg = "none" },
-    FoldColumn = { bg = "none" },
+    FoldColumn = { fg = lighten(background_3, 40), bg = "none" },
+    Folded = { bg = "none" },
     LineNr = { bg = "none" },
   }
 
@@ -540,12 +641,12 @@ M.setup = function(options)
   if variant == "light" then
     lualine_highlights = {
       normal = {
-        a = { fg = is_light(foreground_3, accent, 140), bg = accent },
+        a = { fg = foreground_3, bg = accent },
         b = { fg = foreground_1, bg = background_3 },
         c = { fg = foreground_3, bg = darken(background_0, 7) },
         x = { fg = foreground_3, bg = darken(background_0, 7) },
         y = { fg = foreground_1, bg = background_3 },
-        z = { fg = is_light(foreground_3, accent, 140), bg = accent },
+        z = { fg = foreground_3, bg = accent },
       },
 
       inactive = {
@@ -558,22 +659,22 @@ M.setup = function(options)
 
       insert = {
         a = { fg = is_light(foreground_3, green, 140), bg = green },
-        x = { fg = foreground_1, bg = background_3 },
+        z = { fg = is_light(foreground_3, green, 140), bg = green },
       },
 
       command = {
         a = { fg = is_light(foreground_3, yellow, 140), bg = yellow },
-        x = { fg = foreground_1, bg = background_3 },
+        z = { fg = is_light(foreground_3, yellow, 140), bg = yellow },
       },
 
       visual = {
-        a = { fg = is_light(foreground_3, purple, 140), bg = purple },
-        x = { fg = foreground_1, bg = background_3 },
+        a = { fg = is_light(foreground_1, purple, 140), bg = purple },
+        z = { fg = is_light(foreground_1, purple, 140), bg = purple },
       },
 
       replace = {
-        a = { fg = is_light(foreground_3, red, 140), bg = red },
-        x = { fg = foreground_1, bg = background_3 },
+        a = { fg = is_light(foreground_1, red, 140), bg = red },
+        z = { fg = is_light(foreground_1, red, 140), bg = red },
       },
     }
   elseif variant == "dark" then
@@ -597,28 +698,30 @@ M.setup = function(options)
       },
 
       insert = {
-        a = { fg = is_light(foreground_1, green, 140), bg = green },
-        x = { fg = foreground_1, bg = background_3 },
+        a = { fg = is_light(foreground_3, green, 140), bg = green },
+        z = { fg = is_light(foreground_3, green, 140), bg = green },
       },
 
       command = {
-        a = { fg = is_light(foreground_1, yellow, 140), bg = yellow },
-        x = { fg = foreground_1, bg = background_3 },
+        a = { fg = is_light(foreground_3, yellow, 140), bg = yellow },
+        z = { fg = is_light(foreground_3, yellow, 140), bg = yellow },
       },
 
       visual = {
         a = { fg = is_light(foreground_1, purple, 140), bg = purple },
-        x = { fg = foreground_1, bg = background_3 },
+        z = { fg = is_light(foreground_1, purple, 140), bg = purple },
       },
 
       replace = {
         a = { fg = is_light(foreground_1, red, 140), bg = red },
-        x = { fg = foreground_1, bg = red },
+        z = { fg = is_light(foreground_1, red, 140), bg = red },
       },
     }
   end
 
-  require("lualine").setup({ options = { theme = lualine_highlights } })
+  if pcall(require, "lualine") then
+    require("lualine").setup({ options = { theme = lualine_highlights } })
+  end
 
   -- if config.background then
   -- end
@@ -645,31 +748,6 @@ M.setup = function(options)
   update_colors()
 
   config.on_change()
-end
-
-M.custom_highlights = function(highlights)
-  if highlights == nil then
-    return
-  end
-
-  if highlights[variant] == nil then
-    return
-  end
-
-  -- user_highlights = highlights
-  user_highlights = highlights
-
-  local custom_highlights = {}
-
-  add_highlights(highlights["*"][variant], custom_highlights)
-
-  for key in pairs(highlights) do
-    if key == vim.g.colors_name then
-      add_highlights(highlights[vim.g.colors_name][variant], custom_highlights)
-    end
-  end
-
-  apply_highlights(custom_highlights)
 end
 
 return M
