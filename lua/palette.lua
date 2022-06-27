@@ -62,8 +62,10 @@ local palette -- @string colorscheme thats set
 for i, x in pairs(vim.opt.background) do
   if i == "_value" then
     if x == "light" then
+      print(variant)
       variant = "light"
     else
+      print(variant)
       variant = "dark"
     end
   end
@@ -100,6 +102,10 @@ local function execute_highlights(key, value)
 
     if value.guisp ~= nil then
       hl = hl .. " guisp=" .. value.guisp
+    end
+
+    if value.clear then
+      vim.cmd("hi clear " .. key)
     end
 
     vim.cmd("hi " .. hl)
@@ -157,6 +163,12 @@ local function update_colors()
   })
 end
 
+local function not_empty(tbl)
+  pcall(function()
+    return tbl
+  end, tbl)
+end
+
 local generated
 
 -- Create highight groups based on options
@@ -167,9 +179,9 @@ M.setup = function(options)
     options = {}
   end
 
-  local fn = vim.fn
+  -- check_nil(options["*"].settings)
 
-  local background = fn.synIDattr(fn.synIDtrans(fn.hlID("Normal")), "bg#")
+  local fn = vim.fn
 
   user_configuration = options
 
@@ -216,6 +228,7 @@ M.setup = function(options)
     and options["*"].settings ~= nil
     and options["*"].settings.darken ~= nil
   then
+    -- if not_empty(options["*"].settings.darken) then
     amount = options["*"].settings.darken
   end
 
@@ -313,24 +326,20 @@ M.setup = function(options)
   vim.g.blue = blue
   vim.g.purple = purple
 
-  vim.cmd([[
-    hi! clear Folded
-  ]])
-
   local highlights = {
     -- Built-in: Statusline
     Statusline = { bg = none, fg = foreground_2, gui = none },
     StatuslineNC = { bg = none, fg = foreground_3, gui = none },
 
     -- Built-in: Fold
-    Folded = { bg = lighten(background_0, 10) },
+    Folded = { clear = true, bg = lighten(background_0, 10) },
     FoldColumn = { fg = foreground_3, bg = background_0 },
 
     -- nvim-ufo
     -- https://github.com/kevinhwang91/nvim-ufo
 
-    UfoFoldedBg = { bg = "none" },
-    UfoFoldedFg = { bg = "none" },
+    UfoFoldedBg = { clear = true, bg = "none" },
+    UfoFoldedFg = { clear = true, bg = "none" },
     UfoFoldedEllipsis = { fg = foreground_3 },
 
     -- Built-in: CursorLine
@@ -368,7 +377,7 @@ M.setup = function(options)
     NvimTreeRootFolder = { fg = foreground_2 },
 
     -- NvimTree: Other
-    NvimTreeIndentMarker = { fg = foreground_3 },
+    NvimTreeIndentMarker = { fg = lighten(background_3, 20) },
 
     -- telescopevim
     -- https://githubom/nvim-telescope/telescopevim
@@ -413,7 +422,7 @@ M.setup = function(options)
     BufferLineDiagnosticSelected = { fg = darken(foreground_3, 20), bg = background_3 },
     BufferLineNumbersSelected = { fg = foreground_0, bg = background_3 },
     BufferLineHintSelected = { fg = purple, bg = background_3 },
-    BufferLineInfoSelected = { fg = blue, bg = background_3 },
+    BufferLineInfoSelected = { fg = yellow, bg = background_3 },
     BufferLineHintDiagnosticSelected = { fg = purple, bg = background_3 },
     BufferLineInfoDiagnosticSelected = { fg = blue, bg = background_3 },
     BufferLineWarningSelected = { fg = blue, bg = background_3 },
@@ -483,9 +492,9 @@ M.setup = function(options)
     GitGutterAdd = { fg = green, bg = none },
 
     -- GitSigns: Changed
-    GitSignsChangeLn = { fg = blue, bg = none },
-    GitSignsChangeNr = { fg = blue, bg = none },
-    GitSignsChange = { fg = blue, bg = none },
+    GitSignsChangeLn = { fg = yellow, bg = none },
+    GitSignsChangeNr = { fg = yellow, bg = none },
+    GitSignsChange = { fg = yellow, bg = none },
 
     -- GitSigns: Deleted
     GitSignsDelete = { fg = red, bg = none },
@@ -533,9 +542,9 @@ M.setup = function(options)
     -- https://githubom/neovim/nvim-lspconfig
 
     -- LSP Symbols
-    LspReferenceRead = { bg = background_1 },
-    LspReferenceText = { bg = background_1 },
-    LspReferenceWrite = { bg = background_1 },
+    LspReferenceRead = { clear = true, bg = background_1 },
+    LspReferenceText = { clear = true, bg = background_1 },
+    LspReferenceWrite = { clear = true, bg = background_1 },
 
     -- LSP Config: Error
     LspDiagnosticsDefaultError = { fg = red },
@@ -571,7 +580,7 @@ M.setup = function(options)
     SignColumn = { bg = "none" },
     FoldColumn = { fg = lighten(background_3, 40), bg = "none" },
     Folded = { bg = "none" },
-    LineNr = { bg = "none" },
+    LineNr = { bg = "none", fg = foreground_3 },
   }
 
   local background = {
@@ -594,7 +603,7 @@ M.setup = function(options)
 
     -- Icons
     CmpItemAbbr = { fg = foreground_2 },
-    CmpItemMenu = { fg = foreground_3 },
+    CmpItemMenu = { fg = foreground_2 },
     CmpItemAbbrMatch = { fg = foreground_0, bg = none, gui = none },
     CmpItemAbbrMatchFuzzy = { fg = accent, gui = "underline" },
     CmpItemKindKind = { fg = accent },
