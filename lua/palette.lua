@@ -62,10 +62,8 @@ local palette -- @string colorscheme thats set
 for i, x in pairs(vim.opt.background) do
   if i == "_value" then
     if x == "light" then
-      print(variant)
       variant = "light"
     else
-      print(variant)
       variant = "dark"
     end
   end
@@ -84,33 +82,33 @@ local function add_highlights(tbl_1, tbl_2)
   end
 end
 
-local function execute_highlights(key, value)
-  local hl = key
+local function execute_highlights(highlight, property)
+  local hl = highlight
 
-  if value.links == nil then
-    if value.bg ~= nil then
-      hl = hl .. " guibg=" .. value.bg
+  if property.links == nil then
+    if property.bg ~= nil then
+      hl = hl .. " guibg=" .. property.bg
     end
 
-    if value.fg ~= nil then
-      hl = hl .. " guifg=" .. value.fg
+    if property.fg ~= nil then
+      hl = hl .. " guifg=" .. property.fg
     end
 
-    if value.gui ~= nil then
-      hl = hl .. " gui=" .. value.gui
+    if property.gui ~= nil then
+      hl = hl .. " gui=" .. property.gui
     end
 
-    if value.guisp ~= nil then
-      hl = hl .. " guisp=" .. value.guisp
+    if property.guisp ~= nil then
+      hl = hl .. " guisp=" .. property.guisp
     end
 
-    if value.clear then
-      vim.cmd("hi clear " .. key)
+    if property.clear then
+      vim.cmd("hi clear " .. highlight)
     end
 
     vim.cmd("hi " .. hl)
   else
-    vim.cmd("hi! link " .. hl .. " " .. value.links)
+    vim.cmd("hi! link " .. hl .. " " .. property.links)
   end
 end
 
@@ -335,13 +333,6 @@ M.setup = function(options)
     Folded = { clear = true, bg = lighten(background_0, 10) },
     FoldColumn = { fg = foreground_3, bg = background_0 },
 
-    -- nvim-ufo
-    -- https://github.com/kevinhwang91/nvim-ufo
-
-    UfoFoldedBg = { clear = true, bg = "none" },
-    UfoFoldedFg = { clear = true, bg = "none" },
-    UfoFoldedEllipsis = { fg = foreground_3 },
-
     -- Built-in: CursorLine
     CursorLine = { bg = background_3 },
     CursorLineNr = { bg = background_3 },
@@ -352,167 +343,9 @@ M.setup = function(options)
     NormalFloat = { bg = background_1, fg = foreground_1 },
     FloatBorder = { bg = background_1, fg = foreground_3 },
 
-    -- nvim-tree
-    -- https://githubom/kyazdani42/nvim-tree
-
-    -- NvimTree: Background
-    NvimTreeNormal = { bg = background_1, fg = foreground_1 },
-    NvimTreeNormalNC = { bg = background_1, fg = foreground_1 },
-    NvimTreeEndOfBuffer = { bg = background_1, fg = background_1 },
-    NvimTreeVertSplit = { bg = background_1, fg = background_1 },
-    NvimTreeStatusline = { bg = background_1, fg = background_1 },
-    NvimTreeStatuslineNC = { bg = background_1, fg = background_1 },
-
-    -- NvimTree: Icons
-    NvimTreeGitDelete = { fg = red },
-    NvimTreeFileDirty = { fg = yellow },
-    NvimTreeGitNew = { fg = green },
-    NvimTreeSpecialFile = { fg = purple },
-    NvimTreeGitDirty = { fg = yellow },
-    NvimTreeGitStaged = { fg = green },
-    NvimTreeFolderIcon = { fg = foreground_3 },
-    NvimTreeFolderName = { fg = blue },
-    NvimTreeOpenedFolderName = { fg = blue, bg = none },
-    NvimTreeEmptyFolderName = { fg = blue },
-    NvimTreeRootFolder = { fg = foreground_2 },
-
-    -- NvimTree: Other
-    NvimTreeIndentMarker = { fg = lighten(background_3, 20) },
-
-    -- telescopevim
-    -- https://githubom/nvim-telescope/telescopevim
-
-    -- Telescope: Preview
-    TelescopePreviewBorder = { links = "FloatBorder" },
-    TelescopePreviewTitle = { bg = none, fg = foreground_3 },
-    TelescopePreviewNormal = { links = "NormalFloat" },
-
-    -- Telescope: Results
-    TelescopeResultsTitle = { fg = foreground_3 },
-    TelescopeResultsBorder = { links = "FloatBorder" },
-    TelescopeResultsNormal = { links = "NormalFloat" },
-
-    -- Telescope: Prompt
-    TelescopePromptBorder = { links = "FloatBorder" },
-    TelescopePromptNormal = { links = "NormalFloat" },
-    TelescopePromptPrefix = { fg = accent },
-    TelescopePromptTitle = { bg = none, fg = foreground_3 },
-    TelescopePromptCounter = { fg = accent },
-
-    -- Telescope: Other
-    TelescopeSelection = { links = "PmenuSel" },
-    TelescopeMatching = { fg = none, gui = "underline" },
-
-    -- which-key
-    -- https://githubom/folke/which-key
-
-    WhichKeyFloat = { links = "NormalFloat" },
-    WhichKeyDesc = { fg = foreground_1, bg = none },
-    WhichKeyGroup = { fg = foreground_2, bg = none },
-    WhichKeySeparator = { fg = background_3, bg = none },
-    WhichKey = { fg = accent, gui = "bold", bg = none },
-
-    -- bufferline
-    -- https://github.com/akinsho/bufferline.nvim
-
-    -- BufferLine: Selected
-    BufferLineTabSelected = { fg = foreground_0, bg = background_3 },
-    BufferLineBufferSelected = { fg = foreground_0, bg = background_3 },
-    BufferLineCloseButtonSelected = { fg = foreground_0, bg = background_3 },
-    BufferLineDiagnosticSelected = { fg = darken(foreground_3, 20), bg = background_3 },
-    BufferLineNumbersSelected = { fg = foreground_0, bg = background_3 },
-    BufferLineHintSelected = { fg = purple, bg = background_3 },
-    BufferLineInfoSelected = { fg = yellow, bg = background_3 },
-    BufferLineHintDiagnosticSelected = { fg = purple, bg = background_3 },
-    BufferLineInfoDiagnosticSelected = { fg = blue, bg = background_3 },
-    BufferLineWarningSelected = { fg = blue, bg = background_3 },
-    BufferLineWarningDiagnosticSelected = { fg = yellow, bg = background_3 },
-    BufferLineErrorSelected = { fg = red, bg = background_3 },
-    BufferLineErrorDiagnosticSelected = { fg = red, bg = background_3 },
-    BufferLineModifiedSelected = { fg = green, bg = background_3 },
-    BufferLineDuplicateSelected = { fg = foreground_3, bg = background_3 },
-    BufferLineSeparatorSelected = { fg = darken(background_0, 7), bg = background_3 },
-    BufferLineIndicatorSelected = { fg = accent, bg = background_3 },
-    BufferLinePickSelected = { fg = red, bg = background_3 },
-
-    -- BufferLine: Fill
-    BufferLineFill = { fg = foreground_3, bg = darken(background_0, 7) },
-
-    -- BufferLine: Group
-    BufferLineGroupLabel = { fg = darken(background_0, 7), bg = background_3 },
-    BufferLineGroupSeparator = { fg = foreground_3, bg = darken(background_0, 7) },
-
-    -- BufferLine: Visible
-    BufferLineSeparatorVisible = { fg = darken(background_0, 7), bg = background_2 },
-    BufferLineCloseButtonVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineBufferVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineNumbersVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineDiagnosticVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineHintVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineHintDiagnosticVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineInfoVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineInfoDiagnosticVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineWarningVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineWarningDiagnosticVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineErrorVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineErrorDiagnosticVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineModifiedVisible = { fg = foreground_1, bg = background_2 },
-    BufferLineDuplicateVisible = { fg = foreground_3, bg = background_2 },
-    BufferLineIndicatorVisible = { fg = foreground_3, bg = background_2 },
-    BufferLinePickVisible = { fg = red, bg = background_2 },
-
-    -- BufferLine: Not Selected
-    BufferLineSeparator = { fg = darken(background_0, 7), bg = background_1 },
-    BufferLineInfo = { fg = foreground_3, bg = background_1 },
-    BufferLineHint = { fg = foreground_3, bg = background_1 },
-    BufferLineWarning = { fg = foreground_3, bg = background_1 },
-    BufferLineTab = { fg = foreground_3, bg = background_1 },
-    BufferLineDiagnostic = { fg = foreground_3, bg = background_1 },
-    BufferLineBuffer = { fg = foreground_3, bg = background_1 },
-    BufferLineError = { fg = foreground_3, bg = background_1 },
-    BufferLineModified = { fg = foreground_3, bg = background_1 },
-    BufferLineBackground = { fg = foreground_3, bg = background_1 },
-    BufferLineTabClose = { fg = foreground_3, bg = background_1 },
-    BufferLineCloseButton = { fg = foreground_3, bg = background_1 },
-    BufferLineInfoDiagnostic = { fg = foreground_3, bg = background_1 },
-    BufferLineNumbers = { fg = foreground_3, bg = background_1 },
-    BufferLineHintDiagnostic = { fg = foreground_3, bg = background_1 },
-    BufferLinePick = { fg = red, bg = background_1 },
-    BufferLineWarningDiagnostic = { fg = foreground_3, bg = background_1 },
-    BufferLineErrorDiagnostic = { fg = foreground_3, bg = background_1 },
-    BufferLineDuplicate = { fg = foreground_3, bg = background_1 },
-
-    -- gitsigns
-    -- https://githubom/lewis6991/gitsigns
-
-    -- GitSigns: Added
-    GitSignsAdd = { fg = green, bg = none },
-    GitSignsAddLn = { fg = green, bg = none },
-    GitSignsAddNr = { fg = green, bg = none },
-    GitGutterAdd = { fg = green, bg = none },
-
-    -- GitSigns: Changed
-    GitSignsChangeLn = { fg = yellow, bg = none },
-    GitSignsChangeNr = { fg = yellow, bg = none },
-    GitSignsChange = { fg = yellow, bg = none },
-
-    -- GitSigns: Deleted
-    GitSignsDelete = { fg = red, bg = none },
-    GitSignsDeleteLn = { fg = red, bg = none },
-    GitSignsDeleteNr = { fg = red, bg = none },
-    GitGutterDelete = { fg = red, bg = none },
-
     -- copilot
 
     CopilotSuggestion = { fg = foreground_3, bg = none },
-
-    -- indent-blankline
-    -- https://githubom/lukas-reineke/indent-blankline
-
-    IndentBlankLineChar = { fg = lighten(background_3, 15) },
-    IndentBlankLineContextChar = { fg = lighten(background_3, variant == "light" and 0 or 40) },
-    IndentBlankLineSpaceChar = { bg = none },
-    IndentBlankLineSpaceCharBlankline = { bg = none },
 
     -- Built-in: Error
     DiagnosticError = { fg = red, bg = none },
@@ -537,38 +370,6 @@ M.setup = function(options)
     DiagnosticSignHint = { fg = blue, bg = none },
     DiagnosticUnderlineHint = { guisp = blue, gui = "undercurl" },
     -- DiagnosticFloatingHint = { bg = none, fg = foreground_2 },
-
-    -- nvim-lspconfig
-    -- https://githubom/neovim/nvim-lspconfig
-
-    -- LSP Symbols
-    LspReferenceRead = { clear = true, bg = background_1 },
-    LspReferenceText = { clear = true, bg = background_1 },
-    LspReferenceWrite = { clear = true, bg = background_1 },
-
-    -- LSP Config: Error
-    LspDiagnosticsDefaultError = { fg = red },
-    LspDiagnosticsSignError = { fg = red },
-    LspDiagnosticsError = { fg = red },
-    LspDiagnosticsUnderlineError = { guisp = red, gui = "undercurl" },
-
-    -- LSP Config: Warning
-    LspDiagnosticsDefaultWarn = { fg = yellow },
-    LspDiagnosticsSignWarn = { fg = yellow },
-    LspDiagnosticsWarn = { fg = yellow },
-    LspDiagnosticsUnderlineWarn = { guisp = yellow, gui = "undercurl" },
-
-    -- LSP Config: Hint
-    LspDiagnosticsDefaultHint = { fg = purple },
-    LspDiagnosticsSignHint = { fg = purple },
-    LspDiagnosticsHint = { fg = purple },
-    LspDiagnosticsUnderlineHint = { guisp = purple, gui = "undercurl" },
-
-    -- LSP Config: Info
-    LspDiagnosticsDefaultInfo = { fg = blue },
-    LspDiagnosticsSignInfo = { fg = blue },
-    LspDiagnosticsInfo = { fg = blue },
-    LspDiagnosticsUnderlineInfo = { guisp = blue, gui = "undercurl" },
   }
 
   local transparent = {
@@ -597,30 +398,6 @@ M.setup = function(options)
     PmenuThumb = { bg = lighten(background_3, 60) },
     PmenuSbar = { bg = lighten(background_3, 60) },
     PmenuThumbSel = { bg = accent },
-
-    -- nvim-cmp
-    -- https://githubom/hrsh7th/nvim-cmp
-
-    -- Icons
-    CmpItemAbbr = { fg = foreground_2 },
-    CmpItemMenu = { fg = foreground_2 },
-    CmpItemAbbrMatch = { fg = foreground_0, bg = none, gui = none },
-    CmpItemAbbrMatchFuzzy = { fg = accent, gui = "underline" },
-    CmpItemKindKind = { fg = accent },
-    CmpItemKindClass = { fg = green },
-    CmpItemKindConstructor = { fg = green },
-    CmpItemKindField = { fg = blue },
-    CmpItemKindFile = { fg = yellow },
-    CmpItemKindFolder = { fg = yellow },
-    CmpItemKindFunction = { fg = purple },
-    CmpItemKindInterface = { fg = blue },
-    CmpItemKindKeyword = { fg = blue },
-    CmpItemKindMethod = { fg = purple },
-    CmpItemKindSnippet = { fg = yellow },
-    CmpItemKindText = { fg = yellow },
-    CmpItemKindValue = { fg = blue },
-    CmpItemKindVariable = { fg = purple },
-    CmpItemAbbrDepricated = { bg = foreground_2, gui = "strikethrough" },
   }
 
   local sign_column = {
@@ -644,6 +421,255 @@ M.setup = function(options)
     DiagnosticSignInfo = { bg = background_1, fg = purple },
     DiagnosticSignHint = { bg = background_1, fg = blue },
   }
+
+  local plugins = {
+    ["indent_blankline"] = {
+      -- indent-blankline
+      -- https://githubom/lukas-reineke/indent-blankline
+
+      IndentBlankLineChar = { fg = lighten(background_3, 15) },
+      IndentBlankLineContextChar = { fg = lighten(background_3, variant == "light" and 0 or 40) },
+      IndentBlankLineSpaceChar = { bg = none },
+      IndentBlankLineSpaceCharBlankline = { bg = none },
+    },
+
+    ["lspconfig"] = {
+      -- nvim-lspconfig
+      -- https://githubom/neovim/nvim-lspconfig
+
+      -- LSP Symbols
+      LspReferenceRead = { clear = true, bg = background_1 },
+      LspReferenceText = { clear = true, bg = background_1 },
+      LspReferenceWrite = { clear = true, bg = background_1 },
+
+      -- LSP Config: Error
+      LspDiagnosticsDefaultError = { fg = red },
+      LspDiagnosticsSignError = { fg = red },
+      LspDiagnosticsError = { fg = red },
+      LspDiagnosticsUnderlineError = { guisp = red, gui = "undercurl" },
+
+      -- LSP Config: Warning
+      LspDiagnosticsDefaultWarn = { fg = yellow },
+      LspDiagnosticsSignWarn = { fg = yellow },
+      LspDiagnosticsWarn = { fg = yellow },
+      LspDiagnosticsUnderlineWarn = { guisp = yellow, gui = "undercurl" },
+
+      -- LSP Config: Hint
+      LspDiagnosticsDefaultHint = { fg = purple },
+      LspDiagnosticsSignHint = { fg = purple },
+      LspDiagnosticsHint = { fg = purple },
+      LspDiagnosticsUnderlineHint = { guisp = purple, gui = "undercurl" },
+
+      -- LSP Config: Info
+      LspDiagnosticsDefaultInfo = { fg = blue },
+      LspDiagnosticsSignInfo = { fg = blue },
+      LspDiagnosticsInfo = { fg = blue },
+      LspDiagnosticsUnderlineInfo = { guisp = blue, gui = "undercurl" },
+    },
+
+    ["nvim-tree"] = {
+      -- nvim-tree
+      -- https://githubom/kyazdani42/nvim-tree
+
+      -- NvimTree: Background
+      NvimTreeNormal = { bg = background_1, fg = foreground_1 },
+      NvimTreeNormalNC = { bg = background_1, fg = foreground_1 },
+      NvimTreeEndOfBuffer = { bg = background_1, fg = background_1 },
+      NvimTreeVertSplit = { bg = background_1, fg = background_1 },
+      NvimTreeStatusline = { bg = background_1, fg = background_1 },
+      NvimTreeStatuslineNC = { bg = background_1, fg = background_1 },
+
+      -- NvimTree: Icons
+      NvimTreeGitDelete = { fg = red },
+      NvimTreeFileDirty = { fg = yellow },
+      NvimTreeGitNew = { fg = green },
+      NvimTreeSpecialFile = { fg = purple },
+      NvimTreeGitDirty = { fg = yellow },
+      NvimTreeGitStaged = { fg = green },
+      NvimTreeFolderIcon = { fg = foreground_3 },
+      NvimTreeFolderName = { fg = blue },
+      NvimTreeOpenedFolderName = { fg = blue, bg = none },
+      NvimTreeEmptyFolderName = { fg = blue },
+      NvimTreeRootFolder = { fg = foreground_2 },
+
+      -- NvimTree: Other
+      NvimTreeIndentMarker = { fg = lighten(background_3, 20) },
+    },
+
+    ["which-key"] = {
+      -- which-key
+      -- https://githubom/folke/which-key
+
+      WhichKeyFloat = { links = "NormalFloat" },
+      WhichKeyDesc = { fg = foreground_1, bg = none },
+      WhichKeyGroup = { fg = foreground_2, bg = none },
+      WhichKeySeparator = { fg = background_3, bg = none },
+      WhichKey = { fg = accent, gui = "bold", bg = none },
+    },
+
+    ["gitsigns"] = {
+      -- gitsigns
+      -- https://githubom/lewis6991/gitsigns
+
+      -- GitSigns: Added
+      GitSignsAdd = { fg = green, bg = none },
+      GitSignsAddLn = { fg = green, bg = none },
+      GitSignsAddNr = { fg = green, bg = none },
+      GitGutterAdd = { fg = green, bg = none },
+
+      -- GitSigns: Changed
+      GitSignsChangeLn = { fg = yellow, bg = none },
+      GitSignsChangeNr = { fg = yellow, bg = none },
+      GitSignsChange = { fg = yellow, bg = none },
+
+      -- GitSigns: Deleted
+      GitSignsDelete = { fg = red, bg = none },
+      GitSignsDeleteLn = { fg = red, bg = none },
+      GitSignsDeleteNr = { fg = red, bg = none },
+      GitGutterDelete = { fg = red, bg = none },
+    },
+
+    ["telescope"] = {
+      -- telescope
+      -- https://githubom/nvim-telescope/telescope
+
+      -- Telescope: Preview
+      TelescopePreviewBorder = { links = "FloatBorder" },
+      TelescopePreviewTitle = { bg = none, fg = foreground_3 },
+      TelescopePreviewNormal = { links = "NormalFloat" },
+
+      -- Telescope: Results
+      TelescopeResultsTitle = { fg = foreground_3 },
+      TelescopeResultsBorder = { links = "FloatBorder" },
+      TelescopeResultsNormal = { links = "NormalFloat" },
+
+      -- Telescope: Prompt
+      TelescopePromptBorder = { links = "FloatBorder" },
+      TelescopePromptNormal = { links = "NormalFloat" },
+      TelescopePromptPrefix = { fg = accent },
+      TelescopePromptTitle = { bg = none, fg = foreground_3 },
+      TelescopePromptCounter = { fg = accent },
+
+      -- Telescope: Other
+      TelescopeSelection = { links = "PmenuSel" },
+      TelescopeMatching = { fg = none, gui = "underline" },
+    },
+
+    ["ufo"] = {
+
+      -- nvim-ufo
+      -- https://github.com/kevinhwang91/nvim-ufo
+
+      UfoFoldedBg = { clear = true, bg = "none" },
+      UfoFoldedFg = { clear = true, bg = "none" },
+      UfoFoldedEllipsis = { fg = foreground_3 },
+    },
+
+    ["bufferline"] = {
+
+      -- bufferline
+      -- https://github.com/akinsho/bufferline.nvim
+
+      -- BufferLine: Selected
+      BufferLineTabSelected = { fg = foreground_0, bg = background_3 },
+      BufferLineBufferSelected = { fg = foreground_0, bg = background_3 },
+      BufferLineCloseButtonSelected = { fg = foreground_0, bg = background_3 },
+      BufferLineDiagnosticSelected = { fg = darken(foreground_3, 20), bg = background_3 },
+      BufferLineNumbersSelected = { fg = foreground_0, bg = background_3 },
+      BufferLineHintSelected = { fg = purple, bg = background_3 },
+      BufferLineInfoSelected = { fg = yellow, bg = background_3 },
+      BufferLineHintDiagnosticSelected = { fg = purple, bg = background_3 },
+      BufferLineInfoDiagnosticSelected = { fg = blue, bg = background_3 },
+      BufferLineWarningSelected = { fg = blue, bg = background_3 },
+      BufferLineWarningDiagnosticSelected = { fg = yellow, bg = background_3 },
+      BufferLineErrorSelected = { fg = red, bg = background_3 },
+      BufferLineErrorDiagnosticSelected = { fg = red, bg = background_3 },
+      BufferLineModifiedSelected = { fg = green, bg = background_3 },
+      BufferLineDuplicateSelected = { fg = foreground_3, bg = background_3 },
+      BufferLineSeparatorSelected = { fg = darken(background_0, 7), bg = background_3 },
+      BufferLineIndicatorSelected = { fg = accent, bg = background_3 },
+      BufferLinePickSelected = { fg = red, bg = background_3 },
+
+      -- BufferLine: Fill
+      BufferLineFill = { fg = foreground_3, bg = darken(background_0, 7) },
+
+      -- BufferLine: Group
+      BufferLineGroupLabel = { fg = darken(background_0, 7), bg = background_3 },
+      BufferLineGroupSeparator = { fg = foreground_3, bg = darken(background_0, 7) },
+
+      -- BufferLine: Visible
+      BufferLineSeparatorVisible = { fg = darken(background_0, 7), bg = background_2 },
+      BufferLineCloseButtonVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineBufferVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineNumbersVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineHintVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineHintDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineInfoVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineInfoDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineWarningVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineWarningDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineErrorVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineErrorDiagnosticVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineModifiedVisible = { fg = foreground_1, bg = background_2 },
+      BufferLineDuplicateVisible = { fg = foreground_3, bg = background_2 },
+      BufferLineIndicatorVisible = { fg = foreground_3, bg = background_2 },
+      BufferLinePickVisible = { fg = red, bg = background_2 },
+
+      -- BufferLine: Not Selected
+      BufferLineSeparator = { fg = darken(background_0, 7), bg = background_1 },
+      BufferLineInfo = { fg = foreground_3, bg = background_1 },
+      BufferLineHint = { fg = foreground_3, bg = background_1 },
+      BufferLineWarning = { fg = foreground_3, bg = background_1 },
+      BufferLineTab = { fg = foreground_3, bg = background_1 },
+      BufferLineDiagnostic = { fg = foreground_3, bg = background_1 },
+      BufferLineBuffer = { fg = foreground_3, bg = background_1 },
+      BufferLineError = { fg = foreground_3, bg = background_1 },
+      BufferLineModified = { fg = foreground_3, bg = background_1 },
+      BufferLineBackground = { fg = foreground_3, bg = background_1 },
+      BufferLineTabClose = { fg = foreground_3, bg = background_1 },
+      BufferLineCloseButton = { fg = foreground_3, bg = background_1 },
+      BufferLineInfoDiagnostic = { fg = foreground_3, bg = background_1 },
+      BufferLineNumbers = { fg = foreground_3, bg = background_1 },
+      BufferLineHintDiagnostic = { fg = foreground_3, bg = background_1 },
+      BufferLinePick = { fg = red, bg = background_1 },
+      BufferLineWarningDiagnostic = { fg = foreground_3, bg = background_1 },
+      BufferLineErrorDiagnostic = { fg = foreground_3, bg = background_1 },
+      BufferLineDuplicate = { fg = foreground_3, bg = background_1 },
+    },
+
+    ["cmp"] = {
+      -- nvim-cmp
+      -- https://githubom/hrsh7th/nvim-cmp
+
+      -- Icons
+      CmpItemAbbr = { fg = foreground_2 },
+      CmpItemMenu = { fg = foreground_2 },
+      CmpItemAbbrMatch = { fg = foreground_0, bg = none, gui = none },
+      CmpItemAbbrMatchFuzzy = { fg = accent, gui = "underline" },
+      CmpItemKindKind = { fg = accent },
+      CmpItemKindClass = { fg = green },
+      CmpItemKindConstructor = { fg = green },
+      CmpItemKindField = { fg = blue },
+      CmpItemKindFile = { fg = yellow },
+      CmpItemKindFolder = { fg = yellow },
+      CmpItemKindFunction = { fg = purple },
+      CmpItemKindInterface = { fg = blue },
+      CmpItemKindKeyword = { fg = blue },
+      CmpItemKindMethod = { fg = purple },
+      CmpItemKindSnippet = { fg = yellow },
+      CmpItemKindText = { fg = yellow },
+      CmpItemKindValue = { fg = blue },
+      CmpItemKindVariable = { fg = purple },
+      CmpItemAbbrDepricated = { bg = foreground_2, gui = "strikethrough" },
+    },
+  }
+
+  for plugin, plugin_highlights in pairs(plugins) do
+    if pcall(require, plugin) then
+      add_highlights(plugin_highlights, highlights)
+    end
+  end
 
   local lualine_highlights
 
