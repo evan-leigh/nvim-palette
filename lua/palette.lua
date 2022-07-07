@@ -57,7 +57,6 @@ local fallback = {
 }
 
 local variant -- @string `vim.opt.background` value
-local palette -- @string colorscheme thats set
 
 for i, x in pairs(vim.opt.background) do
   if i == "_value" then
@@ -68,8 +67,6 @@ for i, x in pairs(vim.opt.background) do
     end
   end
 end
--- TODO:
--- Ability to add highlights without overriding any
 
 -- Merges two tables together
 --
@@ -82,29 +79,20 @@ local function add_highlights(tbl_1, tbl_2)
   end
 end
 
-local function execute_highlights(highlight, property)
-  local hl = highlight
+local function execute_highlights(group_name, property)
+
+  highlight = string.format(
+    "highlight %s guifg=%s guibg=%s guisp=%s gui=%s", group_name,
+
+    property.fg or "none",
+    property.bg or "none",
+    property.sp or "none",
+    property.fmt or "none")
 
   if property.links == nil then
-    if property.bg ~= nil then
-      hl = hl .. " guibg=" .. property.bg
-    end
-
-    if property.fg ~= nil then
-      hl = hl .. " guifg=" .. property.fg
-    end
-
-    if property.gui ~= nil then
-      hl = hl .. " gui=" .. property.gui
-    end
-
-    if property.guisp ~= nil then
-      hl = hl .. " guisp=" .. property.guisp
-    end
-
-    vim.cmd("hi " .. hl)
+    vim.api.nvim_command(highlight)
   else
-    vim.cmd("hi! link " .. hl .. " " .. property.links)
+    vim.api.nvim_command("highlight! link " .. group_name .. " " .. property.links)
   end
 end
 
@@ -245,27 +233,15 @@ M.setup = function(options)
     },
   }
 
-  local background_0 = generated.dark.background_0
-  local background_1 = generated.dark.background_1
-  local background_2 = generated.dark.background_2
-  local background_3 = generated.dark.background_3
+  local background_0 = generated[variant].background_0
+  local background_1 = generated[variant].background_1
+  local background_2 = generated[variant].background_2
+  local background_3 = generated[variant].background_3
 
-  local foreground_0 = generated.dark.foreground_0
-  local foreground_1 = generated.dark.foreground_1
-  local foreground_2 = generated.dark.foreground_2
-  local foreground_3 = generated.dark.foreground_3
-
-  if variant == "light" then
-    background_0 = generated.light.
-    background_1 = generated.light.background_1
-    background_2 = generated.light.background_2
-    background_3 = generated.light.background_3
-
-    foreground_0 = generated.light.foreground_0
-    foreground_1 = generated.light.foreground_1
-    foreground_2 = generated.light.foreground_2
-    foreground_3 = generated.light.foreground_3
-  end
+  local foreground_0 = generated[variant].foreground_0
+  local foreground_1 = generated[variant].foreground_1
+  local foreground_2 = generated[variant].foreground_2
+  local foreground_3 = generated[variant].foreground_3
 
   local function validate_color(color)
     -- Checks if color exist in palette
@@ -281,7 +257,6 @@ M.setup = function(options)
     return palette[variant][color]
   end
 
-  -- Core
   local red = validate_color("red")
   local green = validate_color("green")
   local yellow = validate_color("yellow")
@@ -308,9 +283,21 @@ M.setup = function(options)
   vim.g.purple = purple
 
   local highlights = {
+    -- Built-in: Normal
+    Normal = { bg = background_0 },
+    NormalNC = { bg = background_0 },
+    EndOfBuffer = { bg = background_0 },
+
     -- Built-in: Statusline
     Statusline = { bg = none, fg = foreground_2, gui = none },
     StatuslineNC = { bg = none, fg = foreground_3, gui = none },
+
+    -- Built-in: PopupMenu
+    Pmenu = { bg = background_1, fg = foreground_1 },
+    PmenuSel = { bg = accent, gui = "none", fg = is_light(foreground_3, accent, 60) },
+    PmenuThumb = { bg = lighten(background_3, 60) },
+    PmenuSbar = { bg = lighten(background_3, 60) },
+    PmenuThumbSel = { bg = accent },
 
     -- Built-in: Fold
     Folded = { bg = lighten(background_0, 10) },
@@ -468,14 +455,12 @@ M.setup = function(options)
     TelescopeSelection = { links = "PmenuSel" },
     TelescopeMatching = { fg = none, gui = "underline" },
 
-
     -- nvim-ufo
     -- https://github.com/kevinhwang91/nvim-ufo
 
     UfoFoldedBg = { bg = "none" },
     UfoFoldedFg = { bg = "none" },
     UfoFoldedEllipsis = { fg = foreground_3 },
-
 
     -- bufferline
     -- https://github.com/akinsho/bufferline.nvim
@@ -571,70 +556,6 @@ M.setup = function(options)
     CmpItemKindVariable = { fg = purple },
     CmpItemAbbrDepricated = { bg = foreground_2, gui = "strikethrough" },
   }
-
-  local transparent = {
-    Normal = { bg = "none" },
-    NormalNC = { bg = "none" },
-    EndOfBuffer = { bg = "none" },
-    CursorLine = { bg = "none" },
-    CursorLineNr = { bg = "none" },
-    SignColumn = { bg = "none" },
-    FoldColumn = { fg = lighten(background_3, 40), bg = "none" },
-    Folded = { bg = "none" },
-    LineNr = { bg = "none", fg = foreground_3 },
-  }
-
-  local background = {
-    Normal = { bg = background_0 },
-    NormalNC = { bg = background_0 },
-    EndOfBuffer = { bg = background_0 },
-    CusorLine = { bg = background_0 },
-  }
-
-  local popup_menu = {
-    -- Builtin: PopupMenu
-    Pmenu = { bg = background_1, fg = foreground_1 },
-    PmenuSel = { bg = accent, gui = "none", fg = is_light(foreground_3, accent, 60) },
-    PmenuThumb = { bg = lighten(background_3, 60) },
-    PmenuSbar = { bg = lighten(background_3, 60) },
-    PmenuThumbSel = { bg = accent },
-  }
-
-  local sign_column = {
-    -- Builtin: SignColumn
-    LineNr = { bg = background_1, fg = darken(foreground_3, 10) },
-    VertSplit = { bg = background_1, fg = background_1 },
-    SignColumn = { bg = background_1 },
-    FoldColumn = { bg = background_1 },
-
-    -- gitsigns.nvim
-    GitSignsAdd = { bg = background_1, fg = green },
-    GitSignsDelete = { bg = background_1, fg = red },
-    GitSignsChange = { bg = background_1, fg = blue },
-    GitSignsAddNr = { bg = background_1, fg = green },
-    GitSignsDeleteNr = { bg = background_1, fg = red },
-    GitSignsChangeNr = { bg = background_1, fg = blue },
-
-    -- nvim-lspconfig
-    DiagnosticSignError = { bg = background_1, fg = red },
-    DiagnosticSignWarn = { bg = background_1, fg = yellow },
-    DiagnosticSignInfo = { bg = background_1, fg = purple },
-    DiagnosticSignHint = { bg = background_1, fg = blue },
-  }
-
-  add_highlights(background, highlights)
-
-  if config.transparent then
-    add_highlights(transparent, highlights)
-  end
-
-  if config.sign_column then
-    add_highlights(sign_column, highlights)
-  end
-
-  if config.popup_menu then
-    add_highlights(popup_menu, highlights)
-  end
 
   apply_highlights(highlights)
 
