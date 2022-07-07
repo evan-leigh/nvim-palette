@@ -1,5 +1,19 @@
 local M = {}
 
+M.get_variant = function()
+  local variant
+  for i, x in pairs(vim.opt.background) do
+    if i == "_value" then
+      if x == "light" then
+        variant = "light"
+      else
+        variant = "dark"
+      end
+    end
+  end
+  return variant
+end
+
 M.darken = function(hex, amount)
   hex = hex:gsub("#", "")
 
