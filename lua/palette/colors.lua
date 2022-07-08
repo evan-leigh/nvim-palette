@@ -3,6 +3,7 @@ local M = {}
 local lighten = require("palette.utils").lighten
 local darken = require("palette.utils").darken
 
+
 local autocmd = vim.api.nvim_create_autocmd
 
 local fallback = {
@@ -19,11 +20,12 @@ local fallback = {
 -- Create highight groups based on options
 --
 -- @param colors:table - Apply different highlighting based on options
-M.setup = function(colors)
-
-  local variant = require("palette.utils").get_variant()
+M.setup = function(colors, lightness)
 
   colors = colors or {}
+  lightness = lightness or 0
+
+  local variant = require("palette.utils").get_variant()
 
   if variant == "dark" then
     variant = 1
@@ -39,24 +41,14 @@ M.setup = function(colors)
     end
   end
 
-  local amount = 0
-
-  if colors["*"] ~= nil
-      and colors["*"] ~= nil
-      and colors["*"].settings ~= nil
-      and colors["*"].settings.darken ~= nil
-  then
-    amount = colors["*"].settings.darken
-  end
-
   local generated = {}
 
   if variant == 1 then
     generated = {
-      background_0 = lighten(palette.background[1], 0 + amount * -0.3),
-      background_1 = lighten(palette.background[1], 25 + amount * -0.35),
-      background_2 = lighten(palette.background[1], 30 + amount * -0.40),
-      background_3 = lighten(palette.background[1], 35 + amount * -0.45),
+      background_0 = lighten(palette.background[1], 0 + lightness * 0.3),
+      background_1 = lighten(palette.background[1], 15 + lightness * 0.35),
+      background_2 = lighten(palette.background[1], 20 + lightness * 0.40),
+      background_3 = lighten(palette.background[1], 30 + lightness * 0.45),
 
       foreground_0 = darken(palette.foreground[1], 00),
       foreground_1 = darken(palette.foreground[1], 60),
@@ -65,10 +57,10 @@ M.setup = function(colors)
     }
   else
     generated = {
-      background_0 = darken(palette.background[2], 0 + amount * 0.35),
-      background_1 = darken(palette.background[2], 10 + amount * 0.25),
-      background_2 = darken(palette.background[2], 15 + amount * 0.20),
-      background_3 = darken(palette.background[2], 40 + amount * 0.15),
+      background_0 = darken(palette.background[2], 0 + lightness * 0.35),
+      background_1 = darken(palette.background[2], 10 + lightness * 0.25),
+      background_2 = darken(palette.background[2], 15 + lightness * 0.20),
+      background_3 = darken(palette.background[2], 40 + lightness * 0.15),
 
       foreground_0 = lighten(palette.foreground[2], 00),
       foreground_1 = lighten(palette.foreground[2], 20),

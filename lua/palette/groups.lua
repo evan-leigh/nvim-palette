@@ -6,12 +6,11 @@ local lighten = require("palette.utils").lighten
 local is_light = require("palette.utils").is_light
 
 M.setup = function(optional_highlights)
+  local user_highlights = optional_highlights or {}
   local colors = require("palette.colors")
 
-  M.highlights = {
-
+  M.groups = {
     -- Built-in: Normal
-    -- Normal = { bg = "#111111" },
     Normal = { bg = colors.background_0 },
     NormalNC = { bg = colors.background_0 },
     EndOfBuffer = { bg = colors.background_0 },
@@ -214,7 +213,7 @@ M.setup = function(optional_highlights)
     BufferLinePickSelected = { fg = colors.red, bg = colors.background_3 },
 
     -- BufferLine: Fill
-    BufferLineFill = { fg = colors.foreground_3, bg = darken(colors.background_0, 7) },
+    BufferLineFill = { fg = colors.foreground_3, bg = darken(colors.background_1, 7) },
 
     -- BufferLine: Group
     BufferLineGroupLabel = { fg = darken(colors.background_0, 7), bg = colors.background_3 },
@@ -285,12 +284,13 @@ M.setup = function(optional_highlights)
     CmpItemAbbrDepricated = { bg = colors.foreground_2, gui = "strikethrough" },
   }
 
-  for group_name, highlight in pairs(optional_highlights) do
-    M.highlights[group_name] = highlight
+  for group_name, highlight in pairs(user_highlights) do
+    M.groups[group_name] = highlight
 
+    -- FIX: only sets the inner group, should set for every nested group
     if type(highlight) == "table" then
       for group_name_1, group_highlight_1 in pairs(highlight) do
-        M.highlights[group_name_1] = group_highlight_1
+        M.groups[group_name_1] = group_highlight_1
       end
     end
   end
