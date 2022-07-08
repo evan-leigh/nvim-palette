@@ -5,11 +5,13 @@ local lighten = require("palette.utils").lighten
 
 local is_light = require("palette.utils").is_light
 
-M.setup = function()
+M.setup = function(optional_highlights)
   local colors = require("palette.colors")
 
   M.highlights = {
+
     -- Built-in: Normal
+    -- Normal = { bg = "#111111" },
     Normal = { bg = colors.background_0 },
     NormalNC = { bg = colors.background_0 },
     EndOfBuffer = { bg = colors.background_0 },
@@ -282,6 +284,16 @@ M.setup = function()
     CmpItemKindVariable = { fg = colors.purple },
     CmpItemAbbrDepricated = { bg = colors.foreground_2, gui = "strikethrough" },
   }
+
+  for group_name, highlight in pairs(optional_highlights) do
+    M.highlights[group_name] = highlight
+
+    if type(highlight) == "table" then
+      for group_name_1, group_highlight_1 in pairs(highlight) do
+        M.highlights[group_name_1] = group_highlight_1
+      end
+    end
+  end
 end
 
 return M
