@@ -5,94 +5,56 @@ M.get_variant = function()
   for i, x in pairs(vim.opt.background) do
     if i == "_value" then
       if x == "light" then
-        variant = "light"
+        variant = 2
       else
-        variant = "dark"
+        variant = 1
       end
     end
   end
   return variant
 end
 
+M.hex2rgb = function(hex)
+  hex = hex:gsub("#", "")
+  return tonumber(hex:sub(1, 2), 16), tonumber(hex:sub(3, 4), 16), tonumber(hex:sub(5, 6), 16)
+end
+
 M.darken = function(hex, amount)
   hex = hex:gsub("#", "")
-
-  local r = tonumber(hex:sub(1, 2), 16)
-  local g = tonumber(hex:sub(3, 4), 16)
-  local b = tonumber(hex:sub(5, 6), 16)
-
+  local r, g, b = M.hex2rgb(hex)
   r = math.max(0, math.min(255, r - amount))
   g = math.max(0, math.min(255, g - amount))
   b = math.max(0, math.min(255, b - amount))
-
   return string.format("#%02x%02x%02x", r, g, b)
 end
 
 M.lighten = function(hex, amount)
   hex = hex:gsub("#", "")
-
-  local r = tonumber(hex:sub(1, 2), 16)
-  local g = tonumber(hex:sub(3, 4), 16)
-  local b = tonumber(hex:sub(5, 6), 16)
-
-  -- lighten rgb values
+  local r, g, b = M.hex2rgb(hex)
   r = math.max(0, math.min(255, r + amount))
   g = math.max(0, math.min(255, g + amount))
   b = math.max(0, math.min(255, b + amount))
   return string.format("#%02x%02x%02x", r, g, b)
 end
 
--- Convert a hex color value to HSL
--- @param hex: The hex color value
--- @param h: Hue (0-360)
--- @param s: Saturation (0-1)
--- @param l: Lightness (0-1)
-M.hex2hsl = function(hex)
-  local r, g, b = M.hex2rgb(hex)
-  return M.rgb2hsl(r, g, b)
+M.blend = function(color1, color2, percent)
+  local r1, g1, b1 = M.hex2rgb(color1)
+  local r2, g2, b2 = M.hex2rgb(color2)
+  local r = math.floor(r1 + (r2 - r1) * percent)
+  local g = math.floor(g1 + (g2 - g1) * percent)
+  local b = math.floor(b1 + (b2 - b1) * percent)
+
+  return string.format("#%02x%02x%02x", r, g, b)
 end
 
--- Convert a HSL color value to hex
--- @param h: Hue (0-360)
--- @param s: Saturation (0-1)
--- @param l: Lightness (0-1)
--- @returns hex color value
-M.hsl2hex = function(h, s, l)
-  local r, g, b = M.hsl2rgb(h, s, l)
-  return M.rgb2hex(r, g, b)
-end
-
--- Desaturate or saturate a color by a given percentage
--- @param hex The hex color value
--- @param percent The percentage to desaturate or saturate the color.
---                Negative values desaturate the color, positive values saturate it
--- @return The hex color value
-M.change_hex_saturation = function(hex, percent)
-  local hue, saturation, lightness = M.hex2hsl(hex)
-  saturation = saturation + (percent / 100)
-  if saturation > 1 then
-    saturation = 1
-  end
-  if saturation < 0 then
-    saturation = 0
-  end
-  return M.hsl2hex(hue, saturation, lightness)
-end
-
-M.is_light = function(foreground, background, difference)
+M.check_contrast = function(foreground, background, difference)
   foreground = foreground:gsub("#", "")
   background = background:gsub("#", "")
-
-  local r = tonumber(foreground:sub(1, 2), 16)
-  local g = tonumber(foreground:sub(3, 4), 16)
-  local b = tonumber(foreground:sub(5, 6), 16)
-
+  local r, g, b = M.hex2rgb(foreground)
   local r_input = tonumber(background:sub(1, 2), 16)
   local g_input = tonumber(background:sub(3, 4), 16)
   local b_input = tonumber(background:sub(5, 6), 16)
-
   local brightness = (r + g + b) / 3
-
   if brightness > (r_input + g_input + b_input) / 3 then
     return M.lighten(foreground, difference * 2)
   else

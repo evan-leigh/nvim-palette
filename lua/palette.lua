@@ -9,14 +9,14 @@ local augroup = vim.api.nvim_create_augroup
 local defaults = {
   colors = {
     ["*"] = {
-      background = { "#1C1C1C", "#ffffff" },
-      foreground = { "#ced2da", "#ffffff" },
-      red        = { "#E86671", "#000000" },
-      green      = { "#6B8E23", "#000000" },
-      yellow     = { "#D7AF5F", "#000000" },
-      blue       = { "#61AFEF", "#000000" },
-      purple     = { "#c792ea", "#000000" },
-      accent     = { "#61AFEF", "#000000" },
+      background = { "#1C1C1C", "#efefef" },
+      foreground = { "#ced2da", "#383A42" },
+      red        = { "#E86671", "#E45649" },
+      green      = { "#6B8E23", "#50A14F" },
+      yellow     = { "#D7AF5F", "#C18401" },
+      blue       = { "#61AFEF", "#0184BC" },
+      purple     = { "#c792ea", "#A626A4" },
+      accent     = { "#61AFEF", "#0184BC" },
 
       lightness = 0,
 

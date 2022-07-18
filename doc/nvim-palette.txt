@@ -1,16 +1,41 @@
-*nvim-palette.lua* A simple colormanager for your colorschemes
+*nvim-palette.lua* A simple color manager for your colorschemes
 
-Minimum version of neovim: 0.6.0
-
-Author: Evan Leigh <evanleeigh@gmail.com>
-
-==============================================================================
-QUICK START                                          *nvim-palette-quickstart*
-
-    1. Setup ................. |nvim-palette-setup|
+Author: Evan Leigh <evan@leigh.design>
 
 ================================================================================
-SETUP                                                      *nvim-palette-setup*
+CONTENTS                                                            *nvim-palette*
+
+    1. Introduction                                |palette-intoduction|
+    2. Quickstart                                  |palette-quickstart|
+    3. Configuration                               |palette-configuration|
+    4. Utilities                                   |palette-utilites|
+    5. Issues                                      |palette-issues|
+
+================================================================================
+INTRODUCTION                                           *nvim-palette-introduction*
+
+
+Requirements:
+
+    Minimum version of neovim: 0.6.0
+
+================================================================================
+
+QUICKSTART                                               *nvim-palette-quickstart*
+
+================================================================================
+
+CONFIGURATION                                         *nvim-palette-configuration*
+
+================================================================================
+
+UTILITIES                                                 *nvim-palette-utilities*
+
+================================================================================
+
+ISSUES                                                       *nvim-palette-issues*
+
 
 
 vim:tw=78:ts=4:sw=4:et:ft=help:norl:
+

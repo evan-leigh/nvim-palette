@@ -6,30 +6,24 @@ local saturate = require("palette.utils").saturate
 
 -- stylua: ignore
 local fallback = {
-  background = { "#000000", "#efefef" },
-  foreground = { "#aaaaaa", "#000000" },
-  red        = { "#E86671", "#000000" },
-  green      = { "#6B8E23", "#000000" },
-  yellow     = { "#D7AF5F", "#000000" },
-  blue       = { "#61AFEF", "#000000" },
-  purple     = { "#c792ea", "#000000" },
-  accent     = { "#61AFEF", "#000000" },
+    background = { "#1C1C1C", "#efefef" },
+    foreground = { "#ced2da", "#383A42" },
+    red        = { "#E86671", "#E45649" },
+    green      = { "#6B8E23", "#50A14F" },
+    yellow     = { "#D7AF5F", "#C18401" },
+    blue       = { "#61AFEF", "#0184BC" },
+    purple     = { "#c792ea", "#A626A4" },
+    accent     = { "#61AFEF", "#0184BC" },
 }
 
 -- Create highight groups based on options
 --
--- @param colors:table - Apply different highlighting based on options
+-- @param colors: table - Apply different highlighting based on options
 M.setup = function(colors, lightness)
   colors = colors or {}
   lightness = lightness or 0
 
   local variant = require("palette.utils").get_variant()
-
-  if variant == "dark" then
-    variant = 1
-  else
-    variant = 2
-  end
 
   for color, value in pairs(fallback) do
     if colors[color] == nil then
@@ -51,20 +45,20 @@ M.setup = function(colors, lightness)
       foreground_1 = darken(colors.foreground[1], 20),
       foreground_2 = darken(colors.foreground[1], 30),
       foreground_3 = darken(colors.foreground[1], 50),
-      foreground_4 = darken(colors.foreground[1], 90),
+      foreground_4 = darken(colors.foreground[1], 80),
     }
   else
     generated = {
       background_0 = darken(colors.background[2], lightness + 00),
-      background_1 = darken(colors.background[2], lightness + 10),
+      background_1 = darken(colors.background[2], lightness + 15),
       background_2 = darken(colors.background[2], lightness + 20),
       background_3 = darken(colors.background[2], lightness + 30),
 
       foreground_0 = lighten(colors.foreground[2], 00),
       foreground_1 = lighten(colors.foreground[2], 20),
       foreground_2 = lighten(colors.foreground[2], 40),
-      foreground_3 = lighten(colors.foreground[2], 90),
-      foreground_4 = lighten(colors.foreground[2], 110),
+      foreground_3 = lighten(colors.foreground[2], 60),
+      foreground_4 = lighten(colors.foreground[2], 90),
     }
   end
 

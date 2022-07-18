@@ -2,12 +2,14 @@ local M = {}
 
 local darken = require("palette.utils").darken
 local lighten = require("palette.utils").lighten
+local blend = require("palette.utils").blend
+local saturate = require("palette.utils").change_hex_saturation
 
-local is_light = require("palette.utils").is_light
-
-local variant = require("palette.utils").get_variant()
+local check_contrast = require("palette.utils").check_contrast
 
 M.setup = function(optional_highlights)
+  local variant = require("palette.utils").get_variant()
+
   local colors = require("palette.colors")
   local user_highlights = optional_highlights or {}
 
@@ -23,13 +25,17 @@ M.setup = function(optional_highlights)
 
     -- Built-in: PopupMenu
     Pmenu = { bg = colors.background_1, fg = colors.foreground_1 },
-    PmenuSel = { bg = colors.accent, gui = "none", fg = is_light(colors.foreground_3, colors.accent, 125) },
+    PmenuSel = {
+      bg = blend(colors.accent, colors.background_0, 0.85),
+      fg = "none",
+      gui = "none",
+    },
     PmenuThumb = { bg = lighten(colors.background_3, 60) },
     PmenuSbar = { bg = lighten(colors.background_3, 60) },
     PmenuThumbSel = { bg = colors.accent },
 
     -- Built-in: Fold
-    Folded = { bg = lighten(colors.background_0, 10) },
+    Folded = { bg = blend(colors.accent, colors.background_0, 0.85) },
     FoldColumn = { fg = colors.foreground_3, bg = colors.background_0 },
 
     -- Built-in: CursorLine
@@ -66,8 +72,8 @@ M.setup = function(optional_highlights)
     -- indent-blankline
     -- https://githubom/lukas-reineke/indent-blankline
 
-    IndentBlankLineChar = { fg = lighten(colors.foreground_4, variant == "light" and 80 or -30) },
-    IndentBlankLineContextChar = { fg = lighten(colors.foreground_4, variant == "light" and -20 or 0) },
+    IndentBlankLineChar = { fg = lighten(colors.foreground_4, variant == 1 and -30 or 0) },
+    IndentBlankLineContextChar = { fg = lighten(colors.foreground_4, variant == 1 and 0 or -70) },
     IndentBlankLineSpaceChar = { bg = colors.none },
     IndentBlankLineSpaceCharBlankline = { bg = colors.none },
 
@@ -116,7 +122,7 @@ M.setup = function(optional_highlights)
 
     -- NvimTree: Icons
     NvimTreeGitDelete = { fg = colors.red },
-    NvimTreeFileDirty = { fg = colors.yellow },
+    -- NvimTreeFileDirty = { fg = saturate(colors.foreground_1, 0.5) },
     NvimTreeGitNew = { fg = colors.green },
     NvimTreeSpecialFile = { fg = colors.purple },
     NvimTreeGitDirty = { fg = colors.yellow },
@@ -215,7 +221,7 @@ M.setup = function(optional_highlights)
     BufferLinePickSelected = { fg = colors.red, bg = colors.background_3 },
 
     -- BufferLine: Fill
-    BufferLineFill = { fg = colors.foreground_3, bg = darken(colors.background_1, 7) },
+    BufferLineFill = { fg = colors.foreground_3, bg = darken(colors.background_0, 7) },
 
     -- BufferLine: Group
     BufferLineGroupLabel = { fg = darken(colors.background_0, 7), bg = colors.background_3 },
