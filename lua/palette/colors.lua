@@ -2,26 +2,24 @@ local M = {}
 
 local lighten = require("palette.utils").lighten
 local darken = require("palette.utils").darken
+local saturate = require("palette.utils").saturate
 
-
-local autocmd = vim.api.nvim_create_autocmd
-
+-- stylua: ignore
 local fallback = {
-  background = { "#000000", "#ffffff" },
-  foreground = { "#ced2da", "#000000" },
-  red = { "#E86671", "#000000" },
-  green = { "#6B8E23", "#000000" },
-  yellow = { "#D7AF5F", "#000000" },
-  blue = { "#61AFEF", "#000000" },
-  purple = { "#c792ea", "#000000" },
-  accent = { "#61AFEF", "#000000" },
+  background = { "#000000", "#efefef" },
+  foreground = { "#aaaaaa", "#000000" },
+  red        = { "#E86671", "#000000" },
+  green      = { "#6B8E23", "#000000" },
+  yellow     = { "#D7AF5F", "#000000" },
+  blue       = { "#61AFEF", "#000000" },
+  purple     = { "#c792ea", "#000000" },
+  accent     = { "#61AFEF", "#000000" },
 }
 
 -- Create highight groups based on options
 --
 -- @param colors:table - Apply different highlighting based on options
 M.setup = function(colors, lightness)
-
   colors = colors or {}
   lightness = lightness or 0
 
@@ -33,11 +31,10 @@ M.setup = function(colors, lightness)
     variant = 2
   end
 
-  local palette = colors[vim.g.colors_name] or colors["*"] or fallback
-
-  for color in pairs(fallback) do
-    if palette[color] == nil then
-      palette[color] = fallback[color]
+  for color, value in pairs(fallback) do
+    if colors[color] == nil then
+      colors[color] = fallback[color]
+      colors[value] = fallback[value]
     end
   end
 
@@ -45,27 +42,29 @@ M.setup = function(colors, lightness)
 
   if variant == 1 then
     generated = {
-      background_0 = lighten(palette.background[1], 0 + lightness * 0.3),
-      background_1 = lighten(palette.background[1], 15 + lightness * 0.35),
-      background_2 = lighten(palette.background[1], 20 + lightness * 0.40),
-      background_3 = lighten(palette.background[1], 30 + lightness * 0.45),
+      background_0 = lighten(colors.background[1], lightness + 00),
+      background_1 = lighten(colors.background[1], lightness + 05),
+      background_2 = lighten(colors.background[1], lightness + 10),
+      background_3 = lighten(colors.background[1], lightness + 20),
 
-      foreground_0 = darken(palette.foreground[1], 00),
-      foreground_1 = darken(palette.foreground[1], 60),
-      foreground_2 = darken(palette.foreground[1], 80),
-      foreground_3 = darken(palette.foreground[1], 90),
+      foreground_0 = darken(colors.foreground[1], 00),
+      foreground_1 = darken(colors.foreground[1], 20),
+      foreground_2 = darken(colors.foreground[1], 30),
+      foreground_3 = darken(colors.foreground[1], 50),
+      foreground_4 = darken(colors.foreground[1], 90),
     }
   else
     generated = {
-      background_0 = darken(palette.background[2], 0 + lightness * 0.35),
-      background_1 = darken(palette.background[2], 10 + lightness * 0.25),
-      background_2 = darken(palette.background[2], 15 + lightness * 0.20),
-      background_3 = darken(palette.background[2], 40 + lightness * 0.15),
+      background_0 = darken(colors.background[2], lightness + 00),
+      background_1 = darken(colors.background[2], lightness + 10),
+      background_2 = darken(colors.background[2], lightness + 20),
+      background_3 = darken(colors.background[2], lightness + 30),
 
-      foreground_0 = lighten(palette.foreground[2], 00),
-      foreground_1 = lighten(palette.foreground[2], 20),
-      foreground_2 = lighten(palette.foreground[2], 40),
-      foreground_3 = lighten(palette.foreground[2], 90),
+      foreground_0 = lighten(colors.foreground[2], 00),
+      foreground_1 = lighten(colors.foreground[2], 20),
+      foreground_2 = lighten(colors.foreground[2], 40),
+      foreground_3 = lighten(colors.foreground[2], 90),
+      foreground_4 = lighten(colors.foreground[2], 110),
     }
   end
 
@@ -78,26 +77,16 @@ M.setup = function(colors, lightness)
   M.foreground_1 = generated.foreground_1
   M.foreground_2 = generated.foreground_2
   M.foreground_3 = generated.foreground_3
+  M.foreground_4 = generated.foreground_4
 
-  M.red    = palette["red"][variant]
-  M.green  = palette["green"][variant]
-  M.yellow = palette["yellow"][variant]
-  M.blue   = palette["blue"][variant]
-  M.purple = palette["purple"][variant]
-  M.accent = palette["accent"][variant]
+  M.red = colors["red"][variant]
+  M.green = colors["green"][variant]
+  M.yellow = colors["yellow"][variant]
+  M.blue = colors["blue"][variant]
+  M.purple = colors["purple"][variant]
+  M.accent = colors["accent"][variant]
 
   M.none = "none"
-
-  pcall(vim.api.nvim_del_augroup_by_id, 7)
-  local group = vim.api.nvim_create_augroup("UpdateColors", { clear = true })
-
-  autocmd("ColorScheme", {
-    desc = "Reset highlights on ColorScheme",
-    group = group,
-    callback = function()
-      M.setup(colors)
-    end,
-  })
 end
 
 return M

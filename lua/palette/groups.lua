@@ -5,23 +5,25 @@ local lighten = require("palette.utils").lighten
 
 local is_light = require("palette.utils").is_light
 
+local variant = require("palette.utils").get_variant()
+
 M.setup = function(optional_highlights)
-  local user_highlights = optional_highlights or {}
   local colors = require("palette.colors")
+  local user_highlights = optional_highlights or {}
 
   M.groups = {
     -- Built-in: Normal
-    Normal = { bg = colors.background_0 },
+    Normal = { bg = colors.background_0, fg = colors.foreground_0 },
     NormalNC = { bg = colors.background_0 },
     EndOfBuffer = { bg = colors.background_0 },
 
     -- Built-in: Statusline
-    Statusline = { bg = colors.none, fg = colors.foreground_2, gui = colors.none },
-    StatuslineNC = { bg = colors.none, fg = colors.foreground_3, gui = colors.none },
+    Statusline = { bg = colors.background_2, fg = colors.foreground_2, gui = colors.none },
+    StatuslineNC = { bg = colors.background_2, fg = colors.foreground_3, gui = colors.none },
 
     -- Built-in: PopupMenu
     Pmenu = { bg = colors.background_1, fg = colors.foreground_1 },
-    PmenuSel = { bg = colors.accent, gui = "none", fg = is_light(colors.foreground_3, colors.accent, 60) },
+    PmenuSel = { bg = colors.accent, gui = "none", fg = is_light(colors.foreground_3, colors.accent, 125) },
     PmenuThumb = { bg = lighten(colors.background_3, 60) },
     PmenuSbar = { bg = lighten(colors.background_3, 60) },
     PmenuThumbSel = { bg = colors.accent },
@@ -33,12 +35,12 @@ M.setup = function(optional_highlights)
     -- Built-in: CursorLine
     CursorLine = { bg = colors.background_3 },
     CursorLineNr = { bg = colors.background_3 },
-    LineNr = { bg = colors.none, fg = darken(colors.foreground_3, 10) },
+    LineNr = { bg = colors.none, fg = colors.foreground_4 },
     SignColumn = { bg = colors.none },
     VertSplit = { bg = colors.background_1, fg = colors.background_1 },
 
-    NormalFloat = { bg = colors.background_1, fg = colors.foreground_1 },
-    FloatBorder = { bg = colors.background_1, fg = colors.foreground_3 },
+    NormalFloat = { bg = colors.background_1, fg = colors.foreground_3 },
+    FloatBorder = { bg = colors.background_1, fg = darken(colors.foreground_3, 10) },
 
     -- Built-in: Error
     DiagnosticError = { fg = colors.red, bg = colors.none },
@@ -61,12 +63,11 @@ M.setup = function(optional_highlights)
     DiagnosticUnderlineHint = { guisp = colors.blue, gui = "undercurl" },
     DiagnosticFloatingHint = { bg = colors.none, fg = colors.foreground_2 },
 
-
     -- indent-blankline
     -- https://githubom/lukas-reineke/indent-blankline
 
-    IndentBlankLineChar = { fg = lighten(colors.background_3, 15) },
-    IndentBlankLineContextChar = { fg = lighten(colors.background_3, variant == "light" and 0 or 40) },
+    IndentBlankLineChar = { fg = lighten(colors.foreground_4, variant == "light" and 80 or -30) },
+    IndentBlankLineContextChar = { fg = lighten(colors.foreground_4, variant == "light" and -20 or 0) },
     IndentBlankLineSpaceChar = { bg = colors.none },
     IndentBlankLineSpaceCharBlankline = { bg = colors.none },
 
@@ -109,9 +110,9 @@ M.setup = function(optional_highlights)
     NvimTreeNormal = { bg = colors.background_1, fg = colors.foreground_1 },
     NvimTreeNormalNC = { bg = colors.background_1, fg = colors.foreground_1 },
     NvimTreeEndOfBuffer = { bg = colors.background_1, fg = colors.background_1 },
-    NvimTreeVertSplit = { bg = colors.background_1, fg = colors.background_1 },
     NvimTreeStatusline = { bg = colors.background_1, fg = colors.background_1 },
     NvimTreeStatuslineNC = { bg = colors.background_1, fg = colors.background_1 },
+    NvimTreeVertSplit = { links = "VertSplit" },
 
     -- NvimTree: Icons
     NvimTreeGitDelete = { fg = colors.red },
@@ -127,7 +128,7 @@ M.setup = function(optional_highlights)
     NvimTreeRootFolder = { fg = colors.foreground_2 },
 
     -- NvimTree: Other
-    NvimTreeIndentMarker = { fg = lighten(colors.background_3, 20) },
+    NvimTreeIndentMarker = { fg = colors.foreground_4 },
 
     -- which-key
     -- https://githubom/folke/which-key
@@ -162,24 +163,25 @@ M.setup = function(optional_highlights)
     -- https://githubom/nvim-telescope/telescope
 
     -- Telescope: Preview
-    TelescopePreviewBorder = { links = "FloatBorder" },
     TelescopePreviewTitle = { bg = colors.none, fg = colors.foreground_3 },
-    TelescopePreviewNormal = { links = "NormalFloat" },
+    TelescopePreviewBorder = { fg = colors.foreground_4 },
+    TelescopePreviewNormal = { fg = colors.foreground_3 },
 
     -- Telescope: Results
     TelescopeResultsTitle = { fg = colors.foreground_3 },
-    TelescopeResultsBorder = { links = "FloatBorder" },
-    TelescopeResultsNormal = { links = "NormalFloat" },
+    TelescopeResultsBorder = { fg = colors.foreground_4 },
+    TelescopeResultsNormal = { fg = colors.foreground_3 },
 
     -- Telescope: Prompt
-    TelescopePromptBorder = { links = "FloatBorder" },
-    TelescopePromptNormal = { links = "NormalFloat" },
+    TelescopePromptBorder = { fg = colors.foreground_4 },
+    TelescopePromptNormal = { fg = colors.foreground_3 },
     TelescopePromptPrefix = { fg = colors.accent },
     TelescopePromptTitle = { bg = colors.none, fg = colors.foreground_3 },
     TelescopePromptCounter = { fg = colors.accent },
 
     -- Telescope: Other
     TelescopeSelection = { links = "PmenuSel" },
+    -- TelescopeMatching = { fg = colors.none, gui = "underline", guisp = colors.blue },
     TelescopeMatching = { fg = colors.none, gui = "underline" },
 
     -- nvim-ufo

@@ -68,15 +68,15 @@ end
 --                Negative values desaturate the color, positive values saturate it
 -- @return The hex color value
 M.change_hex_saturation = function(hex, percent)
-  local h, s, l = M.hex2hsl(hex)
-  s = s + (percent / 100)
-  if s > 1 then
-    s = 1
+  local hue, saturation, lightness = M.hex2hsl(hex)
+  saturation = saturation + (percent / 100)
+  if saturation > 1 then
+    saturation = 1
   end
-  if s < 0 then
-    s = 0
+  if saturation < 0 then
+    saturation = 0
   end
-  return M.hsl2hex(h, s, l)
+  return M.hsl2hex(hue, saturation, lightness)
 end
 
 M.is_light = function(foreground, background, difference)
